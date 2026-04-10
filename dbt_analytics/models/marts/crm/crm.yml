@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: fct_crm__opportunity
+    columns:
+      - name: opportunity_id
+        tests:
+          - unique
+  - name: fct_crm__contract
+    columns:
+      - name: contract_id
+        tests:
+          - unique
+  - name: dim_crm__account
+    columns:
+      - name: account_id
+        tests:
+          - unique
+  - name: dim_lead
+    columns:
+      - name: lead_id
+        tests:
+          - unique
+  - name: fct_crm__lead
+    columns:
+      - name: lead_id
+        tests:
+          - unique
+  - name: fct_crm__deployment
+    columns:
+      - name: salesforce_id
+        description: Unique ID of the Deployment
+        tests:
+          - unique
+  - name: fct_crm__contract_deployment_history
+    columns:
+      - name: contract_id
+        description: Unique ID of the Contract
+        # tests:
+        #   - unique

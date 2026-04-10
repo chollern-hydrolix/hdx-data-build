@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: argus
+    schema: argus
+    tables:
+      - name: daily_usage_with_table
+      - name: daily_query_with_table

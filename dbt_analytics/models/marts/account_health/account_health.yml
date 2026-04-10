@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: fct_usage__deployment_daily
+    config:
+      materialized: view
+  - name: mart_monthly_customer_usage
+    config:
+      tests:
+        - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - contract_id
+            - reporting_month

@@ -1,0 +1,162 @@
+[0m11:44:30.505790 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x110a10ec0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11286f890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11286f750>]}
+
+
+============================== 11:44:30.508033 | 7faa54a4-c12b-4d15-b00e-d4300a8d0e95 ==============================
+[0m11:44:30.508033 [info ] [MainThread]: Running with dbt=1.11.7
+[0m11:44:30.508291 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'profiles_dir': '/Users/conor/.dbt', 'log_format': 'default', 'debug': 'False', 'warn_error': 'None', 'log_cache_events': 'False', 'fail_fast': 'False', 'cache_selected_only': 'False', 'indirect_selection': 'eager', 'introspect': 'True', 'use_experimental_parser': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'log_path': 'logs', 'send_anonymous_usage_stats': 'True', 'use_colors': 'True', 'no_print': 'None', 'quiet': 'False', 'partial_parse': 'True', 'printer_width': '80', 'write_json': 'True', 'invocation_command': 'dbt init dbt_analytics', 'empty': 'None', 'static_parser': 'True'}
+[0m11:44:30.516245 [debug] [MainThread]: Starter project path: /Users/conor/PycharmProjects/hdx-data-build/.venv/lib/python3.13/site-packages/dbt/include/starter_project
+[0m11:44:30.518948 [info ] [MainThread]: 
+Your new dbt project "dbt_analytics" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m11:44:30.519107 [info ] [MainThread]: Setting up your profile.
+[0m11:48:23.982733 [info ] [MainThread]: Profile dbt_analytics written to /Users/conor/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m11:48:24.007497 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 233.53249, "process_in_blocks": "0", "process_kernel_time": 0.106984, "process_mem_max_rss": "120373248", "process_out_blocks": "0", "process_user_time": 0.515206}
+[0m11:48:24.007880 [debug] [MainThread]: Command `dbt init` succeeded at 11:48:24.007811 after 233.53 seconds
+[0m11:48:24.008212 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1129d56e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107099c70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x112949370>]}
+[0m11:48:24.008422 [debug] [MainThread]: Flushing usage events
+[0m11:48:24.268355 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:48:33.314590 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106970ec0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11016f890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11016f750>]}
+
+
+============================== 11:48:33.316733 | 167dd7de-7d90-435a-a682-fe0ee0e946a3 ==============================
+[0m11:48:33.316733 [info ] [MainThread]: Running with dbt=1.11.7
+[0m11:48:33.316978 [debug] [MainThread]: running dbt with arguments {'log_cache_events': 'False', 'warn_error': 'None', 'quiet': 'False', 'debug': 'False', 'use_experimental_parser': 'False', 'log_path': 'logs', 'cache_selected_only': 'False', 'use_colors': 'True', 'no_print': 'None', 'fail_fast': 'False', 'partial_parse': 'True', 'write_json': 'True', 'empty': 'None', 'static_parser': 'True', 'log_format': 'default', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'introspect': 'True', 'indirect_selection': 'eager', 'invocation_command': 'dbt debug', 'send_anonymous_usage_stats': 'True', 'profiles_dir': '/Users/conor/.dbt', 'printer_width': '80'}
+[0m11:48:33.324465 [info ] [MainThread]: dbt version: 1.11.7
+[0m11:48:33.324674 [info ] [MainThread]: python version: 3.13.1
+[0m11:48:33.324794 [info ] [MainThread]: python path: /Users/conor/PycharmProjects/hdx-data-build/.venv/bin/python
+[0m11:48:33.324955 [info ] [MainThread]: os info: macOS-15.3-arm64-arm-64bit-Mach-O
+[0m11:48:33.348623 [info ] [MainThread]: Using profiles dir at /Users/conor/.dbt
+[0m11:48:33.348839 [info ] [MainThread]: Using profiles.yml file at /Users/conor/.dbt/profiles.yml
+[0m11:48:33.348952 [info ] [MainThread]: Using dbt_project.yml file at /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+[0m11:48:33.349083 [error] [MainThread]: Encountered an error:
+Internal Error
+  Profile should not be None if loading profile completed
+[0m11:48:33.349795 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.063270666, "process_in_blocks": "0", "process_kernel_time": 0.090113, "process_mem_max_rss": "116555776", "process_out_blocks": "0", "process_user_time": 0.514271}
+[0m11:48:33.349997 [debug] [MainThread]: Command `dbt debug` failed at 11:48:33.349956 after 0.06 seconds
+[0m11:48:33.350144 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11027e2c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1102f39b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x110241bf0>]}
+[0m11:48:33.350413 [debug] [MainThread]: Flushing usage events
+[0m11:48:33.554941 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:11:35.978708 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1096d0ec0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10ae6f890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10ae6f750>]}
+
+
+============================== 12:11:35.981091 | ea61701b-2725-4861-bde0-96f24cec86ed ==============================
+[0m12:11:35.981091 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:11:35.981366 [debug] [MainThread]: running dbt with arguments {'send_anonymous_usage_stats': 'True', 'write_json': 'True', 'warn_error': 'None', 'use_colors': 'True', 'fail_fast': 'False', 'cache_selected_only': 'False', 'indirect_selection': 'eager', 'quiet': 'False', 'profiles_dir': '/Users/conor/.dbt', 'log_format': 'default', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'log_cache_events': 'False', 'invocation_command': 'dbt debug', 'printer_width': '80', 'version_check': 'True', 'empty': 'None', 'no_print': 'None', 'partial_parse': 'True', 'static_parser': 'True', 'log_path': 'logs', 'debug': 'False', 'use_experimental_parser': 'False', 'target_path': 'None'}
+[0m12:11:35.989495 [info ] [MainThread]: dbt version: 1.11.7
+[0m12:11:35.989702 [info ] [MainThread]: python version: 3.13.1
+[0m12:11:35.989813 [info ] [MainThread]: python path: /Users/conor/PycharmProjects/hdx-data-build/.venv/bin/python
+[0m12:11:35.989908 [info ] [MainThread]: os info: macOS-15.3-arm64-arm-64bit-Mach-O
+[0m12:11:36.022966 [info ] [MainThread]: Using profiles dir at /Users/conor/.dbt
+[0m12:11:36.023168 [info ] [MainThread]: Using profiles.yml file at /Users/conor/.dbt/profiles.yml
+[0m12:11:36.023281 [info ] [MainThread]: Using dbt_project.yml file at /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+[0m12:11:36.023407 [error] [MainThread]: Encountered an error:
+Internal Error
+  Profile should not be None if loading profile completed
+[0m12:11:36.025247 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.077751294, "process_in_blocks": "0", "process_kernel_time": 0.105059, "process_mem_max_rss": "119406592", "process_out_blocks": "0", "process_user_time": 0.518676}
+[0m12:11:36.025537 [debug] [MainThread]: Command `dbt debug` failed at 12:11:36.025487 after 0.08 seconds
+[0m12:11:36.025703 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10af7e2c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10aff39b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10af41bf0>]}
+[0m12:11:36.025868 [debug] [MainThread]: Flushing usage events
+[0m12:11:36.247067 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:17:05.155595 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x112d00ec0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x114b6f890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x114b6f750>]}
+
+
+============================== 12:17:05.157781 | ed10c759-0807-4e7e-881a-3530cd630c72 ==============================
+[0m12:17:05.157781 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:17:05.158030 [debug] [MainThread]: running dbt with arguments {'partial_parse': 'True', 'cache_selected_only': 'False', 'log_cache_events': 'False', 'empty': 'None', 'use_experimental_parser': 'False', 'use_colors': 'True', 'no_print': 'None', 'static_parser': 'True', 'version_check': 'True', 'printer_width': '80', 'indirect_selection': 'eager', 'warn_error': 'None', 'write_json': 'True', 'log_format': 'default', 'invocation_command': 'dbt debug', 'log_path': 'logs', 'target_path': 'None', 'fail_fast': 'False', 'debug': 'False', 'quiet': 'False', 'profiles_dir': '/Users/conor/.dbt', 'send_anonymous_usage_stats': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True'}
+[0m12:17:05.165397 [info ] [MainThread]: dbt version: 1.11.7
+[0m12:17:05.165608 [info ] [MainThread]: python version: 3.13.1
+[0m12:17:05.165723 [info ] [MainThread]: python path: /Users/conor/PycharmProjects/hdx-data-build/.venv/bin/python
+[0m12:17:05.165819 [info ] [MainThread]: os info: macOS-15.3-arm64-arm-64bit-Mach-O
+[0m12:17:05.195637 [info ] [MainThread]: Using profiles dir at /Users/conor/.dbt
+[0m12:17:05.195827 [info ] [MainThread]: Using profiles.yml file at /Users/conor/.dbt/profiles.yml
+[0m12:17:05.195942 [info ] [MainThread]: Using dbt_project.yml file at /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+[0m12:17:05.196068 [error] [MainThread]: Encountered an error:
+Internal Error
+  Profile should not be None if loading profile completed
+[0m12:17:05.197475 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.0696295, "process_in_blocks": "0", "process_kernel_time": 0.094188, "process_mem_max_rss": "118456320", "process_out_blocks": "0", "process_user_time": 0.509267}
+[0m12:17:05.197718 [debug] [MainThread]: Command `dbt debug` failed at 12:17:05.197672 after 0.07 seconds
+[0m12:17:05.197874 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x114c7e2c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x114cf39b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x114c41bf0>]}
+[0m12:17:05.198040 [debug] [MainThread]: Flushing usage events
+[0m12:17:05.428973 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:19:11.654972 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1047d4ec0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105a6f890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105a6f750>]}
+
+
+============================== 12:19:11.657433 | 8d0e6430-2d4e-4306-99e2-fc8e6ea4671d ==============================
+[0m12:19:11.657433 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:19:11.657687 [debug] [MainThread]: running dbt with arguments {'introspect': 'True', 'log_format': 'default', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'warn_error': 'None', 'no_print': 'None', 'indirect_selection': 'eager', 'send_anonymous_usage_stats': 'True', 'version_check': 'True', 'fail_fast': 'False', 'log_cache_events': 'False', 'empty': 'None', 'profiles_dir': '/Users/conor/.dbt', 'use_colors': 'True', 'log_path': 'logs', 'write_json': 'True', 'target_path': 'None', 'printer_width': '80', 'static_parser': 'True', 'invocation_command': 'dbt debug', 'debug': 'False', 'cache_selected_only': 'False', 'quiet': 'False', 'use_experimental_parser': 'False', 'partial_parse': 'True'}
+[0m12:19:11.665685 [info ] [MainThread]: dbt version: 1.11.7
+[0m12:19:11.665879 [info ] [MainThread]: python version: 3.13.1
+[0m12:19:11.665983 [info ] [MainThread]: python path: /Users/conor/PycharmProjects/hdx-data-build/.venv/bin/python
+[0m12:19:11.666076 [info ] [MainThread]: os info: macOS-15.3-arm64-arm-64bit-Mach-O
+[0m12:19:11.697784 [info ] [MainThread]: Using profiles dir at /Users/conor/.dbt
+[0m12:19:11.697990 [info ] [MainThread]: Using profiles.yml file at /Users/conor/.dbt/profiles.yml
+[0m12:19:11.698100 [info ] [MainThread]: Using dbt_project.yml file at /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+[0m12:19:11.698229 [error] [MainThread]: Encountered an error:
+Internal Error
+  Profile should not be None if loading profile completed
+[0m12:19:11.699514 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.07433496, "process_in_blocks": "0", "process_kernel_time": 0.100426, "process_mem_max_rss": "119734272", "process_out_blocks": "0", "process_user_time": 0.516928}
+[0m12:19:11.699751 [debug] [MainThread]: Command `dbt debug` failed at 12:19:11.699699 after 0.07 seconds
+[0m12:19:11.699898 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b7e2c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105bf39b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b41bf0>]}
+[0m12:19:11.700055 [debug] [MainThread]: Flushing usage events
+[0m12:19:11.937820 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:25:57.826396 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106600ec0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11206f890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11206f750>]}
+
+
+============================== 12:25:57.829146 | ff635172-4db5-4df9-9191-b7d56fe02ee2 ==============================
+[0m12:25:57.829146 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:25:57.829456 [debug] [MainThread]: running dbt with arguments {'indirect_selection': 'eager', 'log_path': 'logs', 'static_parser': 'True', 'log_cache_events': 'False', 'write_json': 'True', 'target_path': 'None', 'quiet': 'False', 'invocation_command': 'dbt deps', 'debug': 'False', 'warn_error': 'None', 'printer_width': '80', 'fail_fast': 'False', 'send_anonymous_usage_stats': 'True', 'use_colors': 'True', 'partial_parse': 'True', 'use_experimental_parser': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'no_print': 'None', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'empty': 'None', 'profiles_dir': '/Users/conor/.dbt', 'version_check': 'True'}
+[0m12:25:57.829894 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m12:25:57.831044 [debug] [MainThread]: Resource report: {"command_name": "deps", "command_success": false, "command_wall_clock_time": 0.034362666, "process_in_blocks": "0", "process_kernel_time": 0.091842, "process_mem_max_rss": "114688000", "process_out_blocks": "0", "process_user_time": 0.494348}
+[0m12:25:57.831347 [debug] [MainThread]: Command `dbt deps` failed at 12:25:57.831301 after 0.03 seconds
+[0m12:25:57.831581 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11208e2c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11056af90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1104f9e10>]}
+[0m12:25:57.831803 [debug] [MainThread]: Flushing usage events
+[0m12:25:58.003877 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m16:32:41.435000 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11215af90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11379f4d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11379f750>]}
+
+
+============================== 16:32:41.437439 | 720af20d-9657-4b13-b50f-57770a738723 ==============================
+[0m16:32:41.437439 [info ] [MainThread]: Running with dbt=1.11.7
+[0m16:32:41.437708 [debug] [MainThread]: running dbt with arguments {'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'static_parser': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/Users/conor/.dbt', 'invocation_command': 'dbt docs serve', 'quiet': 'False', 'use_colors': 'True', 'indirect_selection': 'eager', 'fail_fast': 'False', 'send_anonymous_usage_stats': 'True', 'use_experimental_parser': 'False', 'log_cache_events': 'False', 'version_check': 'True', 'printer_width': '80', 'log_path': 'logs', 'empty': 'None', 'no_print': 'None', 'partial_parse': 'True', 'warn_error': 'None', 'write_json': 'True', 'target_path': 'None', 'introspect': 'True', 'debug': 'False', 'log_format': 'default'}
+[0m16:32:41.437961 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m16:32:41.439069 [debug] [MainThread]: Resource report: {"command_name": "serve", "command_success": false, "command_wall_clock_time": 0.04164775, "process_in_blocks": "0", "process_kernel_time": 0.112523, "process_mem_max_rss": "117669888", "process_out_blocks": "0", "process_user_time": 0.56497}
+[0m16:32:41.439412 [debug] [MainThread]: Command `dbt docs serve` failed at 16:32:41.439360 after 0.04 seconds
+[0m16:32:41.439590 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1137c2650>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1138584d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1137f5370>]}
+[0m16:32:41.439746 [debug] [MainThread]: Flushing usage events
+[0m16:32:41.684635 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m16:58:53.003556 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b0af90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1072ab4d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1072ab750>]}
+
+
+============================== 16:58:53.006131 | f672e1a7-e5eb-4f2f-9778-b6b521016f70 ==============================
+[0m16:58:53.006131 [info ] [MainThread]: Running with dbt=1.11.7
+[0m16:58:53.006393 [debug] [MainThread]: running dbt with arguments {'quiet': 'False', 'indirect_selection': 'eager', 'partial_parse': 'True', 'target_path': 'None', 'fail_fast': 'False', 'printer_width': '80', 'empty': 'False', 'warn_error': 'None', 'introspect': 'True', 'write_json': 'True', 'cache_selected_only': 'False', 'log_path': 'logs', 'use_colors': 'True', 'log_cache_events': 'False', 'log_format': 'default', 'debug': 'False', 'profiles_dir': '/Users/conor/PycharmProjects/hdx-data-build/dbt_analytics', 'static_parser': 'True', 'no_print': 'None', 'invocation_command': 'dbt build --select mart_mrr_contracts', 'use_experimental_parser': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'version_check': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m16:58:53.006859 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m16:58:53.007643 [debug] [MainThread]: Resource report: {"command_name": "build", "command_success": false, "command_wall_clock_time": 0.03383375, "process_in_blocks": "0", "process_kernel_time": 0.072527, "process_mem_max_rss": "115736576", "process_out_blocks": "0", "process_user_time": 0.481116}
+[0m16:58:53.007912 [debug] [MainThread]: Command `dbt build` failed at 16:58:53.007864 after 0.03 seconds
+[0m16:58:53.008066 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1072c6520>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10735c4d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1072f9370>]}
+[0m16:58:53.008214 [debug] [MainThread]: Flushing usage events
+[0m16:58:53.206069 [debug] [MainThread]: An error was encountered while trying to flush usage events

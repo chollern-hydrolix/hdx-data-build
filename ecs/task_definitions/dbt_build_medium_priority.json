@@ -1,0 +1,42 @@
+{
+  "family": "dbt-build-medium-priority",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::570204184505:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::570204184505:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "dbt",
+      "image": "570204184505.dkr.ecr.us-east-2.amazonaws.com/hdx-business-systems/data-build:latest",
+      "command": ["build", "--select", "path:models/marts/account_health path:models/marts/accounting path:models/marts/cloud_costs path:models/marts/salesops"],
+      "essential": true,
+      "environment": [
+        { "name": "DBT_TARGET", "value": "prod" }
+      ],
+      "secrets": [
+        {
+          "name": "DBT_HOST",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:570204184505:secret:hdx/dbt:DBT_HOST::"
+        },
+        {
+          "name": "DBT_USER",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:570204184505:secret:hdx/dbt:DBT_USER::"
+        },
+        {
+          "name": "DBT_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:570204184505:secret:hdx/dbt:DBT_PASSWORD::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/dbt-build-medium-priority",
+          "awslogs-region": "us-east-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

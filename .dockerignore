@@ -1,0 +1,10 @@
+_internal_docs/
+venv/
+.venv/
+.idea/
+.env
+CLAUDE.md
+dbt_analytics/target/
+dbt_analytics/dbt_packages/
+dbt_analytics/logs/
+logs/

@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: raw_salesforce
+    schema: raw_salesforce
+    tables:
+      - name: ie_cluster__c
+      - name: ie_project__c
+      - name: ie_table__c
+      - name: ie_bucket__c
+      - name: ie_table_usage__c
+      - name: ie_project_queries__c
+      - name: ie_cluster_cost__c
+      - name: ie_cluster_queries__c
+      - name: ie_bucket_costs__c
+      - name: contract
+      - name: opportunity
+      - name: account
+      - name: deployment__c
+      - name: event
+      - name: task
+      - name: lead
+      - name: contact
+      - name: case
+      - name: user
+      - name: product2
+      - name: pricebook2
+      - name: pricebook_entry
+      - name: record_type

@@ -1,0 +1,86 @@
+schedules:
+
+  - name: dbt.snapshot.crm
+    description: 'Run dbt snapshots against all CRM source tables.'
+    schedule_expression: 'cron(0 2 * * ? *)'     # 02:00 UTC daily
+    state: 'ENABLED'
+    group_name: 'hdx-data-build'
+    target:
+      arn: 'arn:aws:ecs:us-east-2:570204184505:cluster/hdx-data-build'
+      role_arn: 'arn:aws:iam::570204184505:role/Amazon_EventBridge_Scheduler_ECS_Role'
+      ecs_parameters:
+        task_definition_arn: 'arn:aws:ecs:us-east-2:570204184505:task-definition/dbt-snapshot'
+        subnet_ids:
+          - 'subnet-0e69b634bf2460fff'
+          - 'subnet-0bdaf99fa9526ae45'
+        security_group_ids:
+          - 'sg-031751a98314fa5b9'
+          - 'sg-04ccc6674bc993dc7'
+
+  - name: dbt.build.crm
+    description: 'Build CRM dbt models.'
+    schedule_expression: 'cron(30 * * * ? *)'  # Every 30 minutes
+    state: 'ENABLED'
+    group_name: 'hdx-data-build'
+    target:
+      arn: 'arn:aws:ecs:us-east-2:570204184505:cluster/hdx-data-build'
+      role_arn: 'arn:aws:iam::570204184505:role/Amazon_EventBridge_Scheduler_ECS_Role'
+      ecs_parameters:
+        task_definition_arn: 'arn:aws:ecs:us-east-2:570204184505:task-definition/dbt-run-crm'
+        subnet_ids:
+          - 'subnet-0e69b634bf2460fff'
+          - 'subnet-0bdaf99fa9526ae45'
+        security_group_ids:
+          - 'sg-031751a98314fa5b9'
+          - 'sg-04ccc6674bc993dc7'
+
+  - name: dbt.build.finance
+    description: 'Build finance dbt models.'
+    schedule_expression: 'cron(0 * * * ? *)'     # Every hour
+    state: 'ENABLED'
+    group_name: 'hdx-data-build'
+    target:
+      arn: 'arn:aws:ecs:us-east-2:570204184505:cluster/hdx-data-build'
+      role_arn: 'arn:aws:iam::570204184505:role/Amazon_EventBridge_Scheduler_ECS_Role'
+      ecs_parameters:
+        task_definition_arn: 'arn:aws:ecs:us-east-2:570204184505:task-definition/dbt-build-finance'
+        subnet_ids:
+          - 'subnet-0e69b634bf2460fff'
+          - 'subnet-0bdaf99fa9526ae45'
+        security_group_ids:
+          - 'sg-031751a98314fa5b9'
+          - 'sg-04ccc6674bc993dc7'
+
+  - name: dbt.build.mart-monthly-customer-usage
+    description: 'Build mart_monthly_customer_usage and upstream models.'
+    schedule_expression: 'cron(0 * * * ? *)'     # Every hour
+    state: 'ENABLED'
+    group_name: 'hdx-data-build'
+    target:
+      arn: 'arn:aws:ecs:us-east-2:570204184505:cluster/hdx-data-build'
+      role_arn: 'arn:aws:iam::570204184505:role/Amazon_EventBridge_Scheduler_ECS_Role'
+      ecs_parameters:
+        task_definition_arn: 'arn:aws:ecs:us-east-2:570204184505:task-definition/dbt-build-mart-monthly-customer-usage'
+        subnet_ids:
+          - 'subnet-0e69b634bf2460fff'
+          - 'subnet-0bdaf99fa9526ae45'
+        security_group_ids:
+          - 'sg-031751a98314fa5b9'
+          - 'sg-04ccc6674bc993dc7'
+
+  - name: dbt.build.medium-priority
+    description: 'Build account health, accounting, cloud costs, and salesops models.'
+    schedule_expression: 'cron(0 0/4 * * ? *)'   # Every 4 hours
+    state: 'ENABLED'
+    group_name: 'hdx-data-build'
+    target:
+      arn: 'arn:aws:ecs:us-east-2:570204184505:cluster/hdx-data-build'
+      role_arn: 'arn:aws:iam::570204184505:role/Amazon_EventBridge_Scheduler_ECS_Role'
+      ecs_parameters:
+        task_definition_arn: 'arn:aws:ecs:us-east-2:570204184505:task-definition/dbt-build-medium-priority'
+        subnet_ids:
+          - 'subnet-0e69b634bf2460fff'
+          - 'subnet-0bdaf99fa9526ae45'
+        security_group_ids:
+          - 'sg-031751a98314fa5b9'
+          - 'sg-04ccc6674bc993dc7'

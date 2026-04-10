@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: linode
+    schema: linode
+    tables:
+      - name: cluster
+      - name: linode_instance
+      - name: linode_volume
+      - name: event
+      - name: invoice
+      - name: invoice_item

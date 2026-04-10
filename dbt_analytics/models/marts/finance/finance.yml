@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: mart_mrr_contracts
+    config:
+      materialized: table
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - contract_id
+            - reporting_month
+  - name: mart_contract_expiration
+    config:
+      materialized: table
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - contract_id
+            - reporting_month
+  - name: stg_usage__contract_monthly
+    config:
+      materialized: table
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - contract_id
+            - reporting_month

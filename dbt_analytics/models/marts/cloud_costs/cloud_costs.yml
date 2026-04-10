@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: fct_cogs__akamai_deployment_cost
+    config:
+      materialized: table
+  - name: fct_cogs__azure_bucket_cost
+    config:
+      materialized: table
+  - name: mart_cogs__monthly_contract_margin
+    config:
+      materialized: table
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - deployment_sfid
+            - reporting_month
+          where: "reporting_month is not null"

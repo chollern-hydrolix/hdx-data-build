@@ -1,0 +1,6 @@
+_internal_docs/
+venv/
+.venv/
+.idea/
+.env
+CLAUDE.md

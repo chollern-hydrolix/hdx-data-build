@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: internal
+    schema: internal
+    tables:
+      - name: salesforce_object
+      - name: salesforce_field

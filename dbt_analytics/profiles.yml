@@ -1,0 +1,21 @@
+dbt_analytics:
+  target: "{{ env_var('DBT_TARGET', 'local') }}"
+  outputs:
+    local:
+      type: postgres
+      host: "{{ env_var('DBT_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      port: 5432
+      dbname: postgres
+      schema: dbt_chollern
+      threads: 1
+    prod:
+      type: postgres
+      host: "{{ env_var('DBT_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      port: 5432
+      dbname: postgres
+      schema: analytics
+      threads: 4
