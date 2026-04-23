@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Schema** | `analytics` |
+| **Schema** | `dbt_chollern` |
 | **Materialization** | snapshot |
 | **Strategy** | timestamp |
 | **Unique Key** | `case_id` |
@@ -49,8 +49,8 @@
 | `created_date` | timestamp |  |
 | `last_modified_date` | timestamp |  |
 | `contract_short_id` | text |  |
-| `system_modstamp` | timestamp |  |
 | `dbt_scd_id` | text |  |
 | `dbt_updated_at` | timestamp |  |
 | `dbt_valid_from` | timestamp |  |
 | `dbt_valid_to` | timestamp |  |
+| `system_modstamp` | timestamp |  |

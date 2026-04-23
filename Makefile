@@ -7,13 +7,14 @@ ECR_REPO   ?= hdx-business-systems/data-build
 IMAGE_TAG  ?= latest
 
 DBT = cd dbt_analytics && dbt
+env ?= local
 
 .PHONY: dbt-deps dbt-debug dbt-run dbt-test dbt-clean dbt-build dbt-run-model dbt-build-model dbt-snapshot dbt-snapshot-select \
         docker-build docker-push ecr-login register-tasks deploy \
         tmp-create-execution-role tmp-create-task-role \
         tmp-attach-execution-policy tmp-attach-task-policy \
         tmp-update-execution-trust tmp-update-task-trust \
-        tmp-create-log-groups tmp-run-crm \
+        tmp-create-log-groups test-run-crm test-run-finance test-run-medium-priority \
         tmp-create-scheduler-role tmp-attach-scheduler-policy
 
 # --- dbt (local) ---
@@ -55,9 +56,12 @@ dbt-docs-serve:
 	$(DBT) docs serve --host 127.0.0.1
 
 dbt-docs-export:
-	python scripts/generate_docs.py --dbt-target $(env)
+	.venv/bin/python scripts/generate_docs.py --dbt-target $(env)
 
 # --- Docker / ECR ---
+
+auth-sso:
+	aws sso login --profile $(PROFILE_NAME)
 
 ecr-login:
 	aws ecr get-login-password --region $(AWS_REGION) --profile $(PROFILE_NAME) | \
@@ -147,7 +151,9 @@ tmp-attach-scheduler-policy:
 	  --policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"ecs:RunTask","Resource":"arn:aws:ecs:$(AWS_REGION):$(AWS_ACCOUNT_ID):task-definition/*"},{"Effect":"Allow","Action":"iam:PassRole","Resource":["arn:aws:iam::$(AWS_ACCOUNT_ID):role/ecsTaskExecutionRole","arn:aws:iam::$(AWS_ACCOUNT_ID):role/ecsTaskRole"]}]}' \
 	  --profile $(PROFILE_NAME) --no-cli-pager
 
-tmp-run-crm:
+# --- Model build tests ---
+
+test-run-crm:
 	aws ecs run-task \
 	  --cluster $(ECS_CLUSTER) \
 	  --task-definition dbt-run-crm \
@@ -157,10 +163,30 @@ tmp-run-crm:
 	  --profile $(PROFILE_NAME) \
 	  --no-cli-pager
 
-tmp-build-finance:
+test-build-finance:
 	aws ecs run-task \
 	  --cluster $(ECS_CLUSTER) \
 	  --task-definition dbt-build-finance \
+	  --launch-type FARGATE \
+	  --network-configuration "awsvpcConfiguration={subnets=[$(SUBNET_IDS)],securityGroups=[$(SECURITY_GROUP_IDS)],assignPublicIp=ENABLED}" \
+	  --region $(AWS_REGION) \
+	  --profile $(PROFILE_NAME) \
+	  --no-cli-pager
+
+test-build-medium-priority:
+	aws ecs run-task \
+	  --cluster $(ECS_CLUSTER) \
+	  --task-definition dbt-build-medium-priority \
+	  --launch-type FARGATE \
+	  --network-configuration "awsvpcConfiguration={subnets=[$(SUBNET_IDS)],securityGroups=[$(SECURITY_GROUP_IDS)],assignPublicIp=ENABLED}" \
+	  --region $(AWS_REGION) \
+	  --profile $(PROFILE_NAME) \
+	  --no-cli-pager
+
+test-snapshot:
+	aws ecs run-task \
+	  --cluster $(ECS_CLUSTER) \
+	  --task-definition dbt-snapshot \
 	  --launch-type FARGATE \
 	  --network-configuration "awsvpcConfiguration={subnets=[$(SUBNET_IDS)],securityGroups=[$(SECURITY_GROUP_IDS)],assignPublicIp=ENABLED}" \
 	  --region $(AWS_REGION) \

@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Schema** | `analytics` |
+| **Schema** | `dbt_chollern` |
 | **Materialization** | snapshot |
 | **Strategy** | timestamp |
 | **Unique Key** | `salesforce_id` |

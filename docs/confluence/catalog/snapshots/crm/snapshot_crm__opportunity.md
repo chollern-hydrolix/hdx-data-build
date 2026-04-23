@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Schema** | `analytics` |
+| **Schema** | `dbt_chollern` |
 | **Materialization** | snapshot |
 | **Strategy** | timestamp |
 | **Unique Key** | `opportunity_id` |
@@ -58,9 +58,9 @@
 | `dbt_valid_from` | timestamp |  |
 | `dbt_valid_to` | timestamp |  |
 | `system_modstamp` | timestamp |  |
+| `poc_start_date` | date |  |
+| `use_case` | text |  |
 | `age_in_days` | integer |  |
 | `stage_duration_in_days` | integer |  |
 | `last_stage_change_date` | timestamp |  |
-| `poc_start_date` | date |  |
-| `use_case` | text |  |
 | `grafana_seats` | numeric |  |

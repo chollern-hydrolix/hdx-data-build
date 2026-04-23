@@ -82,6 +82,16 @@ Snapshots run daily at 02:00 UTC via ECS. **Do not run snapshots in two environm
 
 ## Naming Conventions
 
+Model names follow this structure:
+
+```
+{prefix}_{domain}__{entity_name}
+```
+
+The double underscore (`__`) separates the domain from the entity name. Example: `fct_crm__contract`, `mart_cogs__monthly_contract_margin`.
+
+### Prefixes
+
 | Prefix | Meaning |
 |---|---|
 | `fct_` | Fact table — events or transactions |
@@ -91,6 +101,19 @@ Snapshots run daily at 02:00 UTC via ECS. **Do not run snapshots in two environm
 | `rpt_` | Report-specific model |
 | `int_` | Intermediate model — not intended for direct consumption |
 | `snapshot_` | SCD Type 2 snapshot |
+
+### Domains
+
+| Domain | Meaning |
+|---|---|
+| `crm` | Salesforce CRM data — contracts, deployments, opportunities, accounts |
+| `cogs` | Cloud cost of goods sold — infrastructure margin and spend |
+| `finance` | Revenue, MRR, contract expiration |
+| `akm` | Akamai invoice and billing data |
+| `aws` | AWS invoice and billing data |
+| `azr` | Azure invoice and billing data |
+| `gcp` | GCP invoice and billing data |
+| `ie` | Internal infrastructure / IE bucket data |
 
 ## Packages
 

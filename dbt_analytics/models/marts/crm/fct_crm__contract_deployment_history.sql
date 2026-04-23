@@ -1,12 +1,13 @@
 {{config(materialized="table")}}
 
 with recursive deployment_with_latest_contract as (
-    select
+    select distinct on (contract_id)
         salesforce_id as salesforce_deployment_id,
         deployment_id,
         contract_id
     from {{ref('fct_crm__deployment')}}
     where contract_id is not null
+    order by contract_id, last_modified_date desc
 ), contract_loop as (
     select
         c.contract_id,
@@ -39,6 +40,11 @@ with recursive deployment_with_latest_contract as (
     from contract_loop cl
     left join {{ref('fct_crm__contract')}} c on cl.contract_id = c.contract_id
     where cl.salesforce_deployment_id is not null
+), contracts_with_metadata_deduped as (
+    select distinct on (contract_id)
+        *
+    from contracts_with_metadata
+    order by contract_id
 ), contracts_with_reporting_months as (
     select
         c.*,
@@ -47,13 +53,15 @@ with recursive deployment_with_latest_contract as (
             else (date_trunc('month', prev_c.reporting_end_date) + interval '1 month')::date
         end as reporting_start_month,
         date_trunc('month', c.reporting_end_date)::date as reporting_end_month
-    from contracts_with_metadata c
-    left join contracts_with_metadata prev_c on c.previous_contract_id = prev_c.contract_id
+    from contracts_with_metadata_deduped c
+    left join contracts_with_metadata_deduped prev_c on c.previous_contract_id = prev_c.contract_id
 )
 select * from contracts_with_reporting_months
 
--- select
---     contract_id
--- from contracts_with_reporting_months
--- group by 1
--- having count(*) > 1
+-- Duplicate rows in contracts_with_metadata
+-- select contract_id, count(*) from contracts_with_metadata
+-- group by 1 having count(*) > 1
+
+-- Duplicate rows in final result
+-- select contract_id from contracts_with_reporting_months
+-- group by 1 having count(*) > 1

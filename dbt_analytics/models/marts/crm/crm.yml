@@ -36,5 +36,35 @@ models:
     columns:
       - name: contract_id
         description: Unique ID of the Contract
-        # tests:
-        #   - unique
+        tests:
+          - unique
+  - name: fct_crm__contract_daily_snapshot
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+          - contract_id
+          - snapshot_date
+  - name: fct_crm__case_daily_snapshot
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+          - case_id
+          - snapshot_date
+  - name: fct_crm__deployment_daily_snapshot
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+          - salesforce_id
+          - snapshot_date
+  - name: fct_crm__opportunity_daily_snapshot
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+          - opportunity_id
+          - snapshot_date
+  - name: fct_crm__lead_weekly_snapshot
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+          - lead_id
+          - snapshot_date

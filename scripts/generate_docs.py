@@ -37,7 +37,7 @@ def run_dbt_docs_generate(dbt_target: str):
     dbt_project_dir = REPO_ROOT / 'dbt_analytics'
     print(f'Running dbt docs generate --target {dbt_target}...')
     result = subprocess.run(
-        ['dbt', 'docs', 'generate', '--target', dbt_target],
+        [str(REPO_ROOT / '.venv' / 'bin' / 'dbt'), 'docs', 'generate', '--target', dbt_target],
         cwd=dbt_project_dir,
     )
     if result.returncode != 0:

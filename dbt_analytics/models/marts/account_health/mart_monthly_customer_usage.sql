@@ -322,7 +322,7 @@ with ie_tables as (
                 end
             else
                 case
-                    when pct_of_commit < 0.01 then 'No Ingest'
+                    when pct_of_commit = 0.0 then 'No Ingest'  -- pct_of_commit < 0.01 then 'No Ingest'
                     when pct_of_commit < 0.25 then 'Low Ingest'
                     else ''
                 end

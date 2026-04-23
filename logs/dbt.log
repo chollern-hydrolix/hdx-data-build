@@ -160,3 +160,19 @@ Runtime Error
 [0m16:58:53.008066 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1072c6520>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10735c4d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1072f9370>]}
 [0m16:58:53.008214 [debug] [MainThread]: Flushing usage events
 [0m16:58:53.206069 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:27:53.013368 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111a2af90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x113bab4d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x113bab750>]}
+
+
+============================== 12:27:53.015719 | 64cc0f5b-e143-48ff-aa0b-88b2df04434c ==============================
+[0m12:27:53.015719 [info ] [MainThread]: Running with dbt=1.11.7
+[0m12:27:53.015977 [debug] [MainThread]: running dbt with arguments {'profiles_dir': '/Users/conor/PycharmProjects/hdx-data-build/dbt_analytics', 'target_path': 'None', 'no_print': 'None', 'version_check': 'True', 'send_anonymous_usage_stats': 'True', 'use_experimental_parser': 'False', 'partial_parse': 'True', 'printer_width': '80', 'write_json': 'True', 'use_colors': 'True', 'warn_error': 'None', 'introspect': 'True', 'log_format': 'default', 'static_parser': 'True', 'empty': 'False', 'quiet': 'False', 'fail_fast': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'log_cache_events': 'False', 'log_path': 'logs', 'invocation_command': 'dbt build --select +mart_mrr_contracts', 'indirect_selection': 'eager', 'cache_selected_only': 'False', 'debug': 'False'}
+[0m12:27:53.016424 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /Users/conor/PycharmProjects/hdx-data-build/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m12:27:53.039995 [debug] [MainThread]: Resource report: {"command_name": "build", "command_success": false, "command_wall_clock_time": 0.061890207, "process_in_blocks": "0", "process_kernel_time": 0.115599, "process_mem_max_rss": "116703232", "process_out_blocks": "0", "process_user_time": 0.527562}
+[0m12:27:53.040340 [debug] [MainThread]: Command `dbt build` failed at 12:27:53.040294 after 0.06 seconds
+[0m12:27:53.040514 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x113bc6520>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x113c5c4d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x113bf9370>]}
+[0m12:27:53.040681 [debug] [MainThread]: Flushing usage events
+[0m12:27:53.241497 [debug] [MainThread]: An error was encountered while trying to flush usage events

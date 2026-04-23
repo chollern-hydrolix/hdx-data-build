@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Schema** | `analytics` |
+| **Schema** | `dbt_chollern` |
 | **Materialization** | view |
 
 ## Depends On

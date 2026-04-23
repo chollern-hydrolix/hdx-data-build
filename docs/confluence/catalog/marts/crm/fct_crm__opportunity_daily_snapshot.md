@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Schema** | `analytics` |
+| **Schema** | `dbt_chollern` |
 | **Materialization** | table |
 
 ## Depends On
@@ -53,10 +53,10 @@
 | `last_modified_date` | timestamp |  |
 | `opportunity_short_id` | text |  |
 | `system_modstamp` | timestamp |  |
+| `poc_start_date` | date |  |
+| `use_case` | text |  |
 | `age_in_days` | integer |  |
 | `stage_duration_in_days` | integer |  |
 | `last_stage_change_date` | timestamp |  |
-| `poc_start_date` | date |  |
-| `use_case` | text |  |
 | `grafana_seats` | numeric |  |
 | `snapshot_date` | date |  |

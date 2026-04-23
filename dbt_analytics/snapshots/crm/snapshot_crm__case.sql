@@ -4,7 +4,8 @@
     config(
         unique_key='case_id',
         strategy='timestamp',
-        updated_at='system_modstamp'
+        updated_at='system_modstamp',
+        invalidate_hard_deletes=true
     )
 }}
 
