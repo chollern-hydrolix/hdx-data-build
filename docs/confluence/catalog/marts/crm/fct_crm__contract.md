@@ -77,6 +77,8 @@
 | `original_contract_start_date` | date |  |
 | `has_overages` | boolean |  |
 | `overage_charges` | text |  |
+| `contract_overrun` | boolean |  |
+| `replaced_by_new_draft_contract` | boolean |  |
 | `created_date` | timestamp |  |
 | `last_modified_date` | timestamp |  |
 | `contract_short_id` | text |  |

@@ -5,9 +5,15 @@ models:
     config:
       materialized: view
   - name: mart_monthly_customer_usage
-    config:
-      tests:
-        - dbt_utils.unique_combination_of_columns:
+    tests:
+      - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - contract_id
             - reporting_month
+  - name: mart_usage__infrastructure_monthly
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - table_uuid
+            - reporting_month
+          where: "reporting_month is not null"

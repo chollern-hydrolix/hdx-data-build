@@ -30,3 +30,10 @@ select
     {{ dbt_utils.star(from=ref('snapshot_crm__contract'), except=['dbt_scd_id', 'dbt_updated_at', 'dbt_valid_from', 'dbt_valid_to']) }},
     snapshot_date
 from deduped
+
+-- TODO: Remove this after 4/24/26
+{#    union all#}
+{#select#}
+{#    {{ dbt_utils.star(from=ref('snapshot_crm__contract'), except=['dbt_scd_id', 'dbt_updated_at', 'dbt_valid_from', 'dbt_valid_to']) }},#}
+{#    date_trunc('day', current_date + interval '1 day')::date as snapshot_date#}
+{#from {{ ref('fct_crm__contract') }}#}

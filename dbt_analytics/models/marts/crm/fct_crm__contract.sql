@@ -87,6 +87,8 @@ with salesforce_contracts as (
         coalesce(original_contract_start__c, '9999-12-31'::date) as original_contract_start_date,
         c.has_overages__c as has_overages,
         c.overage_charges__c as overage_charges,
+        c.contract_overrun__c as contract_overrun,
+        c.replaced_by_new_draft_contract__c as replaced_by_new_draft_contract,
         c.created_date,
         c.last_modified_date,
         left(c.id, 15) as contract_short_id,

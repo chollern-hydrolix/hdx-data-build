@@ -9,45 +9,12 @@ IMAGE_TAG  ?= latest
 DBT = cd dbt_analytics && dbt
 env ?= local
 
-.PHONY: dbt-deps dbt-debug dbt-run dbt-test dbt-clean dbt-build dbt-run-model dbt-build-model dbt-snapshot dbt-snapshot-select \
-        docker-build docker-push ecr-login register-tasks deploy \
+.PHONY: docker-build docker-push ecr-login register-tasks deploy \
         tmp-create-execution-role tmp-create-task-role \
         tmp-attach-execution-policy tmp-attach-task-policy \
         tmp-update-execution-trust tmp-update-task-trust \
         tmp-create-log-groups test-run-crm test-run-finance test-run-medium-priority \
         tmp-create-scheduler-role tmp-attach-scheduler-policy
-
-# --- dbt (local) ---
-
-dbt-deps:
-	$(DBT) deps
-
-dbt-debug:
-	$(DBT) debug
-
-dbt-run:
-	$(DBT) run
-
-dbt-build:
-	$(DBT) build
-
-dbt-test:
-	$(DBT) test
-
-dbt-clean:
-	$(DBT) clean
-
-dbt-run-model:
-	$(DBT) run -s $(model)
-
-dbt-build-model:
-	$(DBT) build -s $(model)
-
-dbt-snapshot:
-	$(DBT) snapshot
-
-dbt-snapshot-select:
-	$(DBT) snapshot -s $(snapshot)
 
 dbt-docs-generate:
 	$(DBT) docs generate --target $(env)
