@@ -88,3 +88,5 @@
 | `retention_summary_data` | numeric |  |
 | `peak_queries_per_minute` | numeric |  |
 | `original_contract_start_date` | date |  |
+| `contract_overrun` | boolean |  |
+| `replaced_by_new_draft_contract` | boolean |  |

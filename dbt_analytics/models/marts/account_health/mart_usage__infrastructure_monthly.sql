@@ -1,4 +1,12 @@
-{{ config(materialized="table") }}
+{{
+    config(
+        materialized="table",
+        indexes=[
+            {'columns': ['deployment_sfid']},
+            {'columns': ['reporting_month']}
+        ]
+    )
+}}
 
 with deployments as (
     select
@@ -75,7 +83,7 @@ with deployments as (
         case
             when ie.is_hdx_shared_cluster or ie.is_multi_tenant_cluster then coalesce(ie.cluster_project_name, 'N/A')
             else coalesce(ie.ie_cluster_name, 'N/A')
-        end as infra_name,
+        end as infrastructure_name,
         coalesce(ie.ie_table_name, 'N/A') as table_name,
         u.total_bytes,
         (u.total_bytes / (1000 ^ 3)) as total_gb,
@@ -85,6 +93,13 @@ with deployments as (
         u.total_rows,
         c.commit_amount,
         c.commit_type,
+        case
+            when c.commit_type = 'GB per Month'    then (u.total_bytes / (1000 ^ 3)) / nullif(c.commit_amount, 0)
+            when c.commit_type = 'GiB per Month'   then (u.total_bytes / (1024 ^ 3)) / nullif(c.commit_amount, 0)
+            when c.commit_type = 'TB per Month'    then (u.total_bytes / (1000 ^ 4)) / nullif(c.commit_amount, 0)
+            when c.commit_type = 'TiB per Month'   then (u.total_bytes / (1024 ^ 4)) / nullif(c.commit_amount, 0)
+            else                                        (u.total_rows / (1000 ^ 3)) / nullif(c.commit_amount, 0)
+        end as pct_of_commit,
         coalesce(c.contract_start_date, '2000-01-01') as contract_start_date,
         coalesce(c.contract_end_date, '9999-01-01') as contract_end_date,
         coalesce(c.contract_status, 'N/A') as contract_status,
@@ -93,6 +108,7 @@ with deployments as (
         coalesce(ie.project_status, 'N/A') as project_status,
         ie.is_hdx_shared_cluster,
         ie.is_multi_tenant_cluster,
+        (ie.is_hdx_shared_cluster or ie.is_multi_tenant_cluster) as is_multi_deployment_cluster,
         coalesce(c.account_sfid, 'N/A') as account_sfid,
         coalesce(c.contract_sfid, 'N/A') as contract_sfid,
         coalesce(d.deployment_sfid, 'N/A') as deployment_sfid,
