@@ -56,5 +56,8 @@
 | `ie_cluster_last_sync_date` | date |  |
 | `ie_project_last_sync_date` | date |  |
 | `ie_table_last_sync_date` | date |  |
+| `ie_cluster_last_usage_meter_sync_date` | date |  |
+| `ie_project_last_usage_meter_sync_date` | date |  |
+| `ie_table_last_usage_meter_sync_date` | date |  |
 | `project_uuid` | text |  |
 | `table_uuid` | text |  |

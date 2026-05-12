@@ -199,7 +199,34 @@ with ie_cluster_with_deployment as (
         case
             when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
             when discount_type = 'POC' then to_date(replace(replace(replace(label, ' ', ''), 'POCCredits', ''), 'POCCredit', ''), 'MonthYYYY')::date
-            when discount_type = 'PREMIUM' then to_date(replace(replace(replace(label, ' ', ''), 'PremiumvsStandardCredit-', ''), 'PremiumVersusStandardCredit-', ''), 'MonthYYYY')::date
+            when discount_type = 'PREMIUM' then
+                to_date(
+                    case
+                        when regexp_like(
+                            replace(replace(replace(label, ' ', ''), 'PremiumvsStandardCredit-', ''), 'PremiumVersusStandardCredit-', ''),
+                            '[0-9]{4}'
+                        )
+                        then replace(
+                                replace(
+                                    replace(label, ' ', ''),
+                                    'PremiumvsStandardCredit-',
+                                    ''
+                                ),
+                                'PremiumVersusStandardCredit-',
+                                ''
+                             )
+                        else replace(
+                                replace(
+                                    replace(label, ' ', ''),
+                                    'PremiumvsStandardCredit-',
+                                    ''
+                                ),
+                                'PremiumVersusStandardCredit-',
+                                ''
+                             ) || extract(year from invoice_publish_month)
+                    end,
+                    'MonthYYYY'
+                )::date
             when discount_type = 'ENTERPRISE' then to_date(replace(replace(replace(label, ' ', ''), 'Premium', ''), 'Discount-', ''), 'MonthYYYY')::date
             -- when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
             -- when discount_type = 'POC' then to_date(replace(replace(label, ' POC Credits', ''), ' POC Credit', ''), 'Month YYYY')::date

@@ -14,9 +14,12 @@
 | [fct_crm__deployment](fct_crm__deployment.md) | table |  |
 | [fct_crm__deployment_daily_snapshot](fct_crm__deployment_daily_snapshot.md) | table |  |
 | [fct_crm__lead](fct_crm__lead.md) | table |  |
+| [fct_crm__lead_prospective_customer_daily_snapshot](fct_crm__lead_prospective_customer_daily_snapshot.md) | table |  |
+| [fct_crm__lead_prospective_prospect_daily_snapshot](fct_crm__lead_prospective_prospect_daily_snapshot.md) | table |  |
 | [fct_crm__lead_weekly_snapshot](fct_crm__lead_weekly_snapshot.md) | table |  |
 | [fct_crm__opportunity](fct_crm__opportunity.md) | table |  |
 | [fct_crm__opportunity_daily_snapshot](fct_crm__opportunity_daily_snapshot.md) | table |  |
+| [fct_crm__top_level_infrastructure_element](fct_crm__top_level_infrastructure_element.md) | table |  |
 | [fct_ie_deployment](fct_ie_deployment.md) | table |  |
 | [mart_crm__deployment](mart_crm__deployment.md) | table |  |
 | [stg_crm__child_contracts](stg_crm__child_contracts.md) | view |  |

@@ -51,6 +51,9 @@ with deployments as (
         t.last_sync_date__c as table_last_sync_date,
         p.last_sync_date__c as project_last_sync_date,
         c.last_sync_date__c as cluster_last_sync_date,
+        t.last_usage_meter_sync_date__c as table_last_usage_meter_sync_date,
+        p.last_usage_meter_sync_date__c as project_last_usage_meter_sync_date,
+        c.last_usage_meter_sync_date__c as cluster_last_usage_meter_sync_date,
         c.hdx_shared_cluster__c as is_hdx_shared_cluster,
         c.multi_tenant_cluster__c as is_multi_tenant_cluster,
         t.table_uuid__c as table_uuid,
@@ -118,6 +121,9 @@ with deployments as (
         coalesce(ie.cluster_last_sync_date) as ie_cluster_last_sync_date,
         coalesce(ie.project_last_sync_date) as ie_project_last_sync_date,
         coalesce(ie.table_last_sync_date) as ie_table_last_sync_date,
+        coalesce(ie.cluster_last_usage_meter_sync_date) as ie_cluster_last_usage_meter_sync_date,
+        coalesce(ie.project_last_usage_meter_sync_date) as ie_project_last_usage_meter_sync_date,
+        coalesce(ie.table_last_usage_meter_sync_date) as ie_table_last_usage_meter_sync_date,
         coalesce(ie.project_uuid, 'N/A') as project_uuid,
         coalesce(ie.table_uuid, 'N/A') as table_uuid
     from infrastructure_elements ie

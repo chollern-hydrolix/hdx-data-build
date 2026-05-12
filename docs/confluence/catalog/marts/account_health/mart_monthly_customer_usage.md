@@ -47,6 +47,7 @@
 | `primary_sub_industry` | text |  |
 | `sub_industry` | text |  |
 | `country` | text |  |
+| `local_currency` | text |  |
 | `reporting_month` | date |  |
 | `total_bytes` | numeric |  |
 | `total_rows` | numeric |  |

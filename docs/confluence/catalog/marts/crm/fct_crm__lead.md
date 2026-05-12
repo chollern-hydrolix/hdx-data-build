@@ -37,6 +37,10 @@
 | `entered_nurture` | timestamp |  |
 | `entered_mql` | timestamp |  |
 | `entered_sql` | timestamp |  |
+| `entered_initial_engagement` | timestamp |  |
+| `entered_qualifying` | timestamp |  |
+| `entered_alignment_to_business` | timestamp |  |
+| `entered_validation_with_customer` | timestamp |  |
 | `created_date` | timestamp |  |
 | `created_by` | text |  |
 | `last_modified_date` | timestamp |  |

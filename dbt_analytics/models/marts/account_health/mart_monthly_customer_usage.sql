@@ -121,6 +121,7 @@ with ie_tables as (
         akamai_account_id__c as akamai_account_id,
         primary_industry__c as primary_industry,
         primary_sub_industry__c as primary_sub_industry,
+        industry,
         sub_industry__c as sub_industry
     from raw_salesforce.account
     where is_deleted is False
@@ -148,10 +149,12 @@ with ie_tables as (
         hydrolix_product__c as hydrolix_product,
         pricing_calculator_version__c as pricing_calculator_version,
         c.contract_overrun__c as contract_overrun,
-        a.primary_industry,
-        a.primary_sub_industry,
+        --a.primary_industry,
+        --a.primary_sub_industry,
+        a.industry,
         a.sub_industry,
-        c.country__c as country
+        c.country__c as country,
+        c.local_currency__c as local_currency
     from raw_salesforce.contract c
     left join deployments d on c.id = d.contract_id
     left join accounts a on c.account_id = a.account_id
@@ -180,14 +183,18 @@ with ie_tables as (
         region__c as sales_region,
         hydrolix_service__c as hydrolix_product,
         pricing_calculator_version__c as pricing_calculator_version,
-        a.primary_industry,
-        a.primary_sub_industry,
+        --a.primary_industry,
+        --a.primary_sub_industry,
+        a.industry,
         a.sub_industry,
-        o.country__c as country
+        o.country__c as country,
+        lc.name as local_currency
     from raw_salesforce.opportunity o
     left join deployments d on o.id = d.opportunity_id
     left join accounts a on o.account_id = a.account_id
+    left join raw_salesforce.local_currency__c lc on o.local_currency__c = lc.id
     where o.is_deleted is False
+    and lc.is_deleted is False
     and o.active_poc__c is True
     and o.channel__c != 'INTERNAL'
 ), deal_union as (
@@ -220,10 +227,12 @@ with ie_tables as (
         akamai_contract_id,
         akamai_account_id,
         contract_overrun,
-        primary_industry,
-        primary_sub_industry,
+        --primary_industry,
+        --primary_sub_industry,
+        industry,
         sub_industry,
-        country
+        country,
+        coalesce(local_currency, 'N/A') as local_currency
     from contracts
         union all
     select
@@ -255,10 +264,12 @@ with ie_tables as (
         null as akamai_contract_id,
         akamai_account_id,
         False as contract_overrun,
-        primary_industry,
-        primary_sub_industry,
+        --primary_industry,
+        --primary_sub_industry,
+        industry,
         sub_industry,
-        country
+        country,
+        coalesce(local_currency, 'N/A') as local_currency
     from opportunities
 ), months AS (
     SELECT * FROM {{ ref('dim_month') }}
@@ -314,6 +325,7 @@ with ie_tables as (
             else ''
         end as contract_flag,
         case
+            when reporting_month = date_trunc('month', current_date)::date and extract(day from current_date) = 1 then ''
             when is_poc then
                 case
                     when total_bytes = 0 then 'No Ingest'
@@ -322,12 +334,13 @@ with ie_tables as (
                 end
             else
                 case
-                    when pct_of_commit = 0.0 then 'No Ingest'  -- pct_of_commit < 0.01 then 'No Ingest'
+                    when pct_of_commit = 0.0 then 'No Ingest'
                     when pct_of_commit < 0.25 then 'Low Ingest'
                     else ''
                 end
         end as ingest_flag,
         case
+            when reporting_month = date_trunc('month', current_date)::date and extract(day from current_date) = 1 then ''
             when max_qpm = 0 then 'No Queries'
             when max_qpm < 2 then 'Low Queries'
             else ''
