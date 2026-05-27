@@ -98,6 +98,7 @@ with ie_cluster_with_deployment as (
                             when r.is_shared_cluster then 'SHARED'
                             else
                                 case
+                                    when cwm.deployment_sfid is null then 'UNKNOWN'
                                     when r.contract_id is null then 'POC'
                                     when r.original_contract_start_date > r.invoice_month then 'POC'
                                     when r.original_contract_start_date <= r.invoice_month then 'PAID'

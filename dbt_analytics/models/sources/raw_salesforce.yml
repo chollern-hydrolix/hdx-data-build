@@ -27,3 +27,4 @@ sources:
       - name: pricebook2
       - name: pricebook_entry
       - name: record_type
+      - name: note

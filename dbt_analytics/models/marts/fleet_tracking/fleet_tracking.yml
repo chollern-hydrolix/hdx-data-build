@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: fct_fleet__cluster_inventory
+    config:
+      materialized: table

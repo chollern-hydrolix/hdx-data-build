@@ -291,6 +291,8 @@ with ie_tables as (
         coalesce(u.avg_daily_max_qpm, 0) as avg_daily_max_qpm,
         coalesce((u.total_bytes / (1024^4)), 0) as total_tib,
         coalesce((u.total_bytes / (1000^4)), 0) as total_tb,
+        coalesce((u.total_bytes / (1024^3)), 0) as total_gib,
+        coalesce((u.total_bytes / (1000^3)), 0) as total_gb,
         coalesce((u.total_rows / 1000000000), 0) as total_billion_rows
     from deals_with_month d
     left join ie_usage_and_queries_grouped_by_deployment u
@@ -301,11 +303,19 @@ with ie_tables as (
         d.*,
         case
             when commit_type = 'Billion records per month' then total_billion_rows / nullif(commit_amount, 0)
-            else total_tb / nullif(tb_per_month_standard, 0)
-        end as pct_of_commit, -- TB Standard + Billion records per month % of commit
+            when commit_type = 'TB per Month' then total_tb / nullif(commit_amount, 0)
+            when commit_type = 'TiB per Month' then total_tib / nullif(commit_amount, 0)
+            when commit_type = 'GB per Month' then total_gb / nullif(commit_amount, 0)
+            when commit_type = 'GiB per Month' then total_gib / nullif(commit_amount, 0)
+            else total_tb / nullif(commit_amount, 0)
+        end as pct_of_commit,
         case
             when commit_type = 'Billion records per month' then total_billion_rows / nullif(commit_amount, 0)
-            else total_tb / nullif(tb_per_month_standard, 0)
+            when commit_type = 'TB per Month' then total_tb / nullif(commit_amount, 0)
+            when commit_type = 'TiB per Month' then total_tib / nullif(commit_amount, 0)
+            when commit_type = 'GB per Month' then total_gb / nullif(commit_amount, 0)
+            when commit_type = 'GiB per Month' then total_gib / nullif(commit_amount, 0)
+            else total_tb / nullif(commit_amount, 0)
         end as pct_of_commit_pro_rated
     from deals_with_usage d
 ), deals_with_flags as (

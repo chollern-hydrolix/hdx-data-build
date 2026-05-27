@@ -32,7 +32,7 @@ with salesforce_cases as (
         c.last_modified_by_id,
         c.created_date,
         c.last_modified_date,
-        left(c.id, 15) as contract_short_id,
+        left(c.id, 15) as case_short_id,
         c.system_modstamp
     from {{source('raw_salesforce', 'case')}} c
     left join {{source('raw_salesforce', 'user')}} u1 on c.owner_id = u1.id
