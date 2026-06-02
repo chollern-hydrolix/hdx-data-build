@@ -38,6 +38,9 @@
 | `contact_email` | text |  |
 | `contact_phone` | text |  |
 | `master_record_id` | text |  |
+| `description` | text |  |
+| `support_level` | text |  |
+| `contact_mobile` | text |  |
 | `account_id` | text |  |
 | `contact_id` | text |  |
 | `owner_id` | text |  |
@@ -45,5 +48,5 @@
 | `last_modified_by_id` | text |  |
 | `created_date` | timestamp |  |
 | `last_modified_date` | timestamp |  |
-| `contract_short_id` | text |  |
+| `case_short_id` | text |  |
 | `system_modstamp` | timestamp |  |

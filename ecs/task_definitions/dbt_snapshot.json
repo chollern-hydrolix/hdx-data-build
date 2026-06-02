@@ -10,7 +10,7 @@
     {
       "name": "dbt",
       "image": "570204184505.dkr.ecr.us-east-2.amazonaws.com/hdx-business-systems/data-build:latest",
-      "command": ["snapshot"],
+      "command": ["snapshot", "--then", "build", "--select", "path:models/marts/crm_periodic_snapshots"],
       "essential": true,
       "environment": [
         { "name": "DBT_TARGET", "value": "prod" }
