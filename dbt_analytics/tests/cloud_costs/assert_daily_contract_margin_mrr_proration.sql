@@ -6,9 +6,9 @@ with per_deployment_month as (
         count(distinct reporting_date) as active_days,
         max(days_in_month) as days_in_month,
         sum(daily_mrr_prorated) as summed_daily_mrr,
-        max(ending_mrr_gross) as monthly_mrr
+        max(monthly_ending_mrr) as monthly_mrr
     from {{ ref('mart_cogs__daily_contract_margin') }}
-    where ending_mrr_gross is not null
+    where monthly_ending_mrr is not null
     group by 1, 2, 3
 )
 select

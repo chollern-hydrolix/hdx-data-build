@@ -62,6 +62,7 @@
 | `sold_by` | text |  |
 | `contract_active` | boolean |  |
 | `industry` | text |  |
+| `sub_industry` | text |  |
 | `primary_industry` | text |  |
 | `primary_sub_industry` | text |  |
 | `akamai_sales_rep` | text |  |

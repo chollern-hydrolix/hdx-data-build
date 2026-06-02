@@ -21,12 +21,15 @@ with salesforce_accounts as (
         coalesce(a.akamai_account_id__c, 'N/A') as akamai_account_id,
         coalesce(rt.name, 'N/A') as record_type_name,
         u1.name as account_owner,
+        a.parent_id as parent_account_id,
+        coalesce(parent_account.name, 'N/A') as parent_account_name,
         a.created_date,
         a.last_modified_date
     from {{source('raw_salesforce', 'account')}} a
     left join {{ source('raw_salesforce', 'user') }} u1 on a.owner_id = u1.id
     left join {{source('raw_salesforce', 'record_type')}} rt on a.record_type_id = rt.id
-    where is_deleted is False
+    left join {{ source('raw_salesforce', 'account') }} parent_account on a.parent_id = parent_account.id
+    where a.is_deleted is False
 ), salesforce_new_business_contracts as (
     select
         account_id,

@@ -10,13 +10,35 @@ Joins Azure costs with Salesforce IE Buckets
 
 */
 
-with azure_costs as (
+with invoiced_months as (
+    select distinct billing_month
+    from azure.monthly_cost_fact
+), current_month_estimate as (
+    -- Estimates current (uninvoiced) month costs from daily_usage_fact.
+    -- Scoped to the current calendar month only to avoid scanning historical data
+    -- and to prevent type-mismatch issues with the invoiced_months exclusion check.
+    -- Splits resource_group-level spend into resource_name grain using historical
+    -- cost ratios from stg_azure__resource_group_name_map.
     select
-        billing_month as billing_month,
+        date_trunc('month', current_date)::date  as billing_month,
+        m.resource_name                          as bucket_name,
+        sum(d.pre_tax_cost * m.cost_ratio)       as pre_tax_cost
+    from azure.daily_usage_fact d
+    inner join {{ ref('stg_azure__resource_group_name_map') }} m
+        on d.resource_group = m.resource_group
+    where date_trunc('month', d.usage_date)::date = date_trunc('month', current_date)::date
+    group by m.resource_name
+), azure_costs as (
+    select
+        billing_month,
         resource_name as bucket_name,
         sum(pre_tax_cost) as pre_tax_cost
     from azure.monthly_cost_fact
     group by 1, 2
+    union all
+    select billing_month, bucket_name, pre_tax_cost
+    from current_month_estimate
+    where billing_month not in (select billing_month from invoiced_months)
 ), ie_bucket_raw as (
     select
         id as ie_bucket_id,
@@ -63,13 +85,16 @@ with azure_costs as (
     from ie_bucket_ranked
     where rn = 1
 ), azure_joined as (
+    -- Aggregate by (billing_month, ie_bucket_id) so multiple resource_names in
+    -- monthly_cost_fact that resolve to the same Salesforce bucket don't fan out.
     select
         ac.billing_month,
-        ac.pre_tax_cost,
-        ac.bucket_name,
-        bd.ie_bucket_id
+        bd.ie_bucket_id,
+        max(ac.bucket_name) as bucket_name,  -- fallback when ie_b has no SF match
+        sum(ac.pre_tax_cost) as pre_tax_cost
     from azure_costs ac
     left join ie_bucket_deduped bd on ac.bucket_name = bd.lookup_key
+    group by 1, 2
 ), azure_data_invoice_staged as (
     select
         a.billing_month as invoice_month,

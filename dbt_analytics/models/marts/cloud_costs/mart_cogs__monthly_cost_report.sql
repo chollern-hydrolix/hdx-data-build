@@ -55,11 +55,12 @@ with akm_invoice as (
             when cluster_label is not null then concat(cluster_label, '.trafficpeak.live')
             else 'N/A'
         end as cluster_hostname,
-        total,
-        premium_discount_total,
-        hdx_total
+        sum(total) as total,
+        sum(premium_discount_total) as premium_discount_total,
+        sum(hdx_total) as hdx_total
     from akm_invoice
     where is_positive
+    group by 1, 2, 3, 4, 5
 ), raw_akamai_invoice_with_salesforce_data as (
     select
         r.*,
@@ -229,27 +230,21 @@ with akm_invoice as (
     from akm_invoice
     where not is_positive
 ), stg_akamai_discount as (
+    -- Aggregate all discount line items per invoice+month+account into one row.
+    -- Multiple discount types (ENTERPRISE, POC, PREMIUM, PROMOTION) on the same invoice
+    -- would otherwise produce identical surrogate keys and fail the uniqueness test.
     select
         invoice_name,
-        case
-            when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
-            when discount_type in ('POC', 'PREMIUM', 'ENTERPRISE') and parsed_month_name is not null then
-                to_date(
-                    parsed_month_name || coalesce(parsed_year, extract(year from invoice_publish_month)::text),
-                    'MonthYYYY'
-                )::date
-            -- Fallback for discount labels with no parseable month: attribute to invoice_publish_month - 1 month
-            else date_trunc('month', invoice_publish_month - interval '1 month')::date
-        end as invoice_month,
+        invoice_month,
         'Linode' as cloud_provider,
         cloud_account,
-        0 as total,
-        0 as premium_discount_total,
-        0 as hdx_total,
-        case when discount_type = 'ENTERPRISE' then total else 0 end as invoice_enterprise_discount_total,
-        case when discount_type = 'PREMIUM' then total else 0 end as invoice_premium_discount_total,
-        case when discount_type = 'POC' then total else 0 end as invoice_poc_credit_total,
-        case when discount_type = 'PROMOTION' then total else 0 end as invoice_promotion_credit_total,
+        0 as linode_total,
+        0 as linode_premium_discount_total,
+        0 as linode_hdx_total,
+        sum(case when discount_type = 'ENTERPRISE' then total else 0 end) as invoice_enterprise_discount_total,
+        sum(case when discount_type = 'PREMIUM'    then total else 0 end) as invoice_premium_discount_total,
+        sum(case when discount_type = 'POC'        then total else 0 end) as invoice_poc_credit_total,
+        sum(case when discount_type = 'PROMOTION'  then total else 0 end) as invoice_promotion_credit_total,
         0 as azure_cost,
         'AKAMAI INVOICE' as cost_type,
         'N/A' as cluster_hostname,
@@ -263,8 +258,25 @@ with akm_invoice as (
         null::date as opportunity_close_date,
         'N/A' as opportunity_id,
         'N/A' as contract_id
-    from raw_akamai_discount
-    where discount_type != 'N/A'
+    from (
+        select
+            invoice_name,
+            case
+                when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
+                when discount_type in ('POC', 'PREMIUM', 'ENTERPRISE') and parsed_month_name is not null then
+                    to_date(
+                        parsed_month_name || coalesce(parsed_year, extract(year from invoice_publish_month)::text),
+                        'MonthYYYY'
+                    )::date
+                else date_trunc('month', invoice_publish_month - interval '1 month')::date
+            end as invoice_month,
+            cloud_account,
+            discount_type,
+            total
+        from raw_akamai_discount
+        where discount_type != 'N/A'
+    ) sub
+    group by invoice_name, invoice_month, cloud_account
 ), azure_data_invoice_staged as (
     select
         concat(to_char(a.invoice_month, 'Mon YYYY'), ' Azure Invoice') as invoice_name,
@@ -292,7 +304,6 @@ with akm_invoice as (
         a.opportunity_id,
         a.contract_id
     from {{ ref('fct_cogs__azure_bucket_cost') }} a
-    left join {{ ref('fct_crm__contract') }} c on a.contract_id = c.contract_id
 ), invoice_data as (
     select * from stg_akamai_invoice_union
         union all

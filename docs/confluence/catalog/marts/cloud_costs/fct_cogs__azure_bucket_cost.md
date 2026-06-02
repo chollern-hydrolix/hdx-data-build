@@ -10,6 +10,7 @@
 ## Depends On
 
 - `int_cogs__ie_bucket_with_contract`
+- `stg_azure__resource_group_name_map`
 
 ## Columns
 

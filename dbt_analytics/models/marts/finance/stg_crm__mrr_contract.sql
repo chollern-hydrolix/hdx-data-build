@@ -53,6 +53,7 @@ with contracts as (
         u1.name as sold_by,
         c.contract_active__c as contract_active,
         a.industry as industry,
+        a.sub_industry__c as sub_industry,
         a.primary_industry__c as primary_industry,
         a.primary_sub_industry__c as primary_sub_industry,
         c.akamai_sales_rep__c as akamai_sales_rep

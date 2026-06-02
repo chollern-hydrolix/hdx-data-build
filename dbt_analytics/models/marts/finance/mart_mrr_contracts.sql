@@ -68,8 +68,8 @@ WITH months AS (
         c.sold_by,
         c.contract_active,
         c.akamai_sales_rep,
-        c.primary_industry,
-        c.primary_sub_industry,
+        c.industry,
+        c.sub_industry,
         o.opportunity_id as opportunity_id
     from {{ ref('stg_crm__mrr_contract') }} c
     left join {{ ref('stg_crm__mrr_contract') }} as prev_c on c.previous_contract_id = prev_c.contract_id

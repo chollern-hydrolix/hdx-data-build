@@ -12,6 +12,7 @@ Daily margin model at (contract_id, deployment_sfid, reporting_date) grain. The 
 ## Depends On
 
 - `dim_cluster_to_deployment`
+- `dim_cluster_to_deployment`
 - `dim_crm__account`
 - `dim_day`
 - `dim_month`
@@ -23,6 +24,7 @@ Daily margin model at (contract_id, deployment_sfid, reporting_date) grain. The 
 - `fct_crm__contract_deployment_history`
 - `fct_crm__contract_deployment_history`
 - `fct_crm__deployment`
+- `fct_usage__deployment_daily`
 - `mart_mrr_contracts`
 - `mart_mrr_contracts`
 - `stg_linode_instance_billing_daily`

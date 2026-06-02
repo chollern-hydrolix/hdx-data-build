@@ -35,6 +35,7 @@ with salesforce_opportunities as (
         o.poc_initiated__c as poc_initiated,
         o.poc_initiated__c and o.is_closed is False as is_poc,
         o.poc_start_date__c as poc_start_date,
+        coalesce(o.poc_status__c, 'N/A') as poc_status,
         coalesce(o.loss_reason__c, 'N/A') as loss_reason,
         coalesce(o.lead_source, 'N/A') as lead_source,
         coalesce(o.lead_source_details__c, '') as lead_source_details,

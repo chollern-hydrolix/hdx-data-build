@@ -21,6 +21,7 @@ with days as (
 ), contract_dimensions as (
     select
         c.contract_id,
+        c.contract_number,
         c.contract_start_date,
         c.contract_end_date,
         c.status as contract_status,
@@ -68,6 +69,7 @@ with days as (
         cd.region,
         cd.contract_start_date,
         cd.contract_end_date,
+        cd.contract_number,
         cd.contract_status,
         cd.hydrolix_product,
         cd.commit_amount,
@@ -114,10 +116,27 @@ with days as (
     select
         reporting_month,
         contract_id,
-        ending_mrr_gross as monthly_mrr,
-        total_bytes,
-        total_rows
+        ending_mrr_gross as monthly_mrr
     from {{ ref('mart_mrr_contracts') }}
+), daily_contract_usage as (
+    select
+        contract_id,
+        reporting_date,
+        sum(total_bytes) as total_bytes,
+        sum(total_rows) as total_rows,
+        max(max_qpm) as max_qpm
+    from {{ ref('fct_usage__deployment_daily') }}
+    {% if is_incremental() %}
+    where reporting_date >= (select date_trunc('month', max(reporting_date))::date - interval '1 month' from {{ this }})
+    {% endif %}
+    group by 1, 2
+), deployment_cluster_hostnames as (
+    select
+        deployment_sfid,
+        allocation_month,
+        string_agg(cluster_hostname, ', ' order by cluster_hostname) as cluster_hostnames
+    from {{ ref('dim_cluster_to_deployment') }}
+    group by 1, 2
 ), deployment_month_contract_count as (
     select
         deployment_sfid,
@@ -138,6 +157,7 @@ with days as (
         c.commit_type,
         c.commit_amount,
         c.contract_id,
+        c.contract_number,
         c.contract_start_date,
         c.contract_end_date,
         c.contract_status,
@@ -153,10 +173,16 @@ with days as (
         akm.monthly_invoiced_premium_discount_linode_cost::numeric / c.days_in_month / coalesce(dmc.contracts_for_deployment_month, 1)::numeric as invoiced_daily_premium_discount_linode_cost_prorated,
         coalesce(azr.monthly_azure_bucket_cost, 0) as monthly_azure_bucket_cost,
         coalesce(azr.monthly_azure_bucket_cost, 0)::numeric / c.days_in_month / coalesce(dmc.contracts_for_deployment_month, 1)::numeric as daily_azure_bucket_cost_prorated,
-        mrr.monthly_mrr as ending_mrr_gross,
+        mrr.monthly_mrr as monthly_ending_mrr,
         mrr.monthly_mrr::numeric / c.days_in_month as daily_mrr_prorated,
-        mrr.total_bytes,
-        mrr.total_rows
+        du.total_bytes,
+        du.total_bytes / (1000^3) as total_gb,
+        du.total_bytes / (1024^3) as total_gib,
+        du.total_bytes / (1000^4) as total_tb,
+        du.total_bytes / (1024^4) as total_tib,
+        du.total_rows,
+        du.max_qpm,
+        dch.cluster_hostnames
     from contracts_with_days c
     left join daily_linode_estimate lin
         on c.reporting_date = lin.reporting_date
@@ -170,9 +196,15 @@ with days as (
     left join monthly_mrr mrr
         on c.reporting_month = mrr.reporting_month
        and c.contract_id = mrr.contract_id
+    left join daily_contract_usage du
+        on c.contract_id = du.contract_id
+       and c.reporting_date = du.reporting_date
     left join deployment_month_contract_count dmc
         on c.deployment_sfid = dmc.deployment_sfid
        and c.reporting_month = dmc.reporting_month
+    left join deployment_cluster_hostnames dch
+        on c.deployment_sfid = dch.deployment_sfid
+       and c.reporting_month = dch.allocation_month
 ), contracts_keys as (
     select distinct deployment_sfid, reporting_date, reporting_month
     from contracts_with_days
@@ -272,6 +304,7 @@ with days as (
         null::text as commit_type,
         null::numeric as commit_amount,
         'UNALLOCATED' as contract_id,
+        null::text as contract_number,
         null::date as contract_start_date,
         null::date as contract_end_date,
         null::text as contract_status,
@@ -287,10 +320,16 @@ with days as (
         unalloc_inv_pdc_monthly::numeric / days_in_month as invoiced_daily_premium_discount_linode_cost_prorated,
         unalloc_azure_monthly as monthly_azure_bucket_cost,
         unalloc_azure_monthly::numeric / days_in_month as daily_azure_bucket_cost_prorated,
-        null::numeric as ending_mrr_gross,
+        null::numeric as monthly_ending_mrr,
         null::numeric as daily_mrr_prorated,
         null::numeric as total_bytes,
-        null::numeric as total_rows
+        null::numeric as total_gb,
+        null::numeric as total_gib,
+        null::numeric as total_tb,
+        null::numeric as total_tib,
+        null::numeric as total_rows,
+        null::numeric as max_qpm,
+        null::text as cluster_hostnames
     from unallocated_per_day
     where coalesce(unalloc_est_linode, 0) != 0
        or coalesce(unalloc_inv_linode_monthly, 0) != 0
@@ -299,6 +338,11 @@ with days as (
     select * from joined
     union all
     select * from unallocated_rows
+), rows_with_margin as (
+    select
+        *,
+        daily_mrr_prorated - estimated_daily_linode_hdx_cost - monthly_azure_bucket_cost as estimated_daily_margin
+    from all_rows
 )
 select
     {{ dbt_utils.generate_surrogate_key([
@@ -307,4 +351,4 @@ select
         'reporting_date'
     ]) }} as margin_daily_id,
     *
-from all_rows
+from rows_with_margin

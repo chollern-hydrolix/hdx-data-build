@@ -11,9 +11,9 @@ with src as (
     select
         reporting_month,
         contract_id,
-        max(ending_mrr_gross) as mart_mrr
+        max(monthly_ending_mrr) as mart_mrr
     from {{ ref('mart_cogs__daily_contract_margin') }}
-    where ending_mrr_gross is not null
+    where monthly_ending_mrr is not null
       and contract_id != 'UNALLOCATED'
     group by 1, 2
 )
