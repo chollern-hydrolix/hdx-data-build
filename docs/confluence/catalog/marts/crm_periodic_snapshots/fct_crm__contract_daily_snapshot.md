@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Schema** | `dbt_chollern` |
-| **Materialization** | table |
+| **Materialization** | incremental |
 
 ## Depends On
 
