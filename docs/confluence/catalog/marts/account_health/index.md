@@ -9,3 +9,4 @@
 | [mart_daily_table_usage](mart_daily_table_usage.md) | table |  |
 | [mart_deployment_health](mart_deployment_health.md) | table |  |
 | [mart_monthly_customer_usage](mart_monthly_customer_usage.md) | table |  |
+| [mart_usage__infrastructure_monthly](mart_usage__infrastructure_monthly.md) | table |  |

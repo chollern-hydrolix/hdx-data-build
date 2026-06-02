@@ -1,6 +1,106 @@
 version: 2
 
 models:
+  - name: fct_akm__invoice_item
+    columns:
+      - name: invoice_item_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_linode_instance_billing_daily
+    columns:
+      - name: daily_billing_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - linode_id
+            - reporting_date
+  - name: mart_cogs__monthly_cost_report
+    description: >
+      Permanent monthly cost report consolidating Linode invoiced costs (dedicated
+      and shared-cluster allocated), Linode invoice discounts (POC, PROMOTION,
+      PREMIUM, ENTERPRISE), and Azure bucket costs. One row per
+      (invoice_name, invoice_month, cluster_hostname, bucket_name, cost_type,
+      deployment_sfid, contract_id). Unallocated upstream rows pass through with
+      'N/A' deployment_sfid rather than being synthesized into a separate
+      UNALLOCATED row (matches temp_cogs__cost_report semantics). Built
+      incrementally on a current+previous-month window.
+    columns:
+      - name: cost_report_id
+        description: >
+          Surrogate hash of the natural composite (invoice_name, invoice_month,
+          cloud_provider, cloud_account, cluster_hostname, bucket_name, cost_type,
+          deployment_sfid, contract_id). Stable across ETL reloads.
+        tests:
+          - unique
+          - not_null
+      - name: invoice_name
+        description: Source-system invoice label (e.g., the Linode invoice number, or "Jun 2026 Azure Invoice" for Azure).
+      - name: invoice_month
+        description: First day of the month the cost is attributed to. For Linode this is invoice_publish_month minus one month.
+      - name: cloud_provider
+        description: One of 'Linode' or 'Azure'.
+      - name: cloud_account
+        description: Cloud account name (e.g., 'prod', 'dev', 'warner', 'trafficpeak-ops', 'azure-prod').
+      - name: cluster_hostname
+        description: Salesforce-side cluster hostname (e.g., 'my-cluster.trafficpeak.live'). 'N/A' for rows that don't map to a cluster (e.g., Akamai discount lines).
+      - name: bucket_name
+        description: Azure bucket / storage name for Azure rows. NULL for Linode invoice and discount rows.
+      - name: cost_type
+        description: >
+          Cost classification ('PAID', 'POC', 'S&M', 'R&D', 'SHARED', 'INTERNAL',
+          'UNKNOWN', 'AKAMAI INVOICE'). Derived from cloud_account, cluster
+          naming conventions, contract dates, and shared-vs-dedicated cluster
+          status.
+      - name: linode_total
+        description: Total Linode cost for this row (post shared-cluster pro-ration if applicable).
+      - name: linode_premium_discount_total
+        description: Linode cost after premium discount, for the row.
+      - name: linode_hdx_total
+        description: HDX-priced Linode cost for the row.
+      - name: invoice_enterprise_discount_total
+        description: Enterprise discount amount (signed, negative for credits). Populated only for Akamai discount rows.
+      - name: invoice_premium_discount_total
+        description: Premium discount amount (signed). Populated only for Akamai discount rows.
+      - name: invoice_poc_credit_total
+        description: POC credit amount (signed). Populated only for Akamai discount rows.
+      - name: invoice_promotion_credit_total
+        description: Promotion credit amount (signed). Populated only for Akamai discount rows.
+      - name: azure_cost
+        description: Azure bucket pre-tax cost for the row. Populated only for Azure rows.
+      - name: deployment_sfid
+        description: Salesforce deployment ID this cost is allocated to. 'N/A' if no deployment mapping was found upstream.
+      - name: deployment_ulid
+        description: ULID of the deployment.
+      - name: contract_id
+        description: Salesforce contract ID associated with the deployment. 'N/A' if no contract is linked.
+      - name: contract_number
+        description: Contract number string.
+      - name: account_name
+        description: Salesforce account name.
+      - name: opportunity_id
+        description: Opportunity ID associated with the deployment.
+      - name: opportunity_name
+        description: Opportunity name.
+      - name: opportunity_stage_name
+        description: Opportunity stage (e.g., 'Closed Won').
+      - name: opportunity_close_date
+        description: Opportunity close date.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - invoice_name
+            - invoice_month
+            - cloud_provider
+            - cloud_account
+            - cluster_hostname
+            - bucket_name
+            - cost_type
+            - deployment_sfid
+            - contract_id
   - name: fct_cogs__akamai_deployment_cost
     config:
       materialized: table
@@ -8,11 +108,177 @@ models:
     config:
       materialized: table
   - name: mart_cogs__monthly_contract_margin
+    description: >
+      Monthly margin model joining contract/deployment dimensions with MRR
+      revenue and invoiced cloud infrastructure costs (Linode/Akamai + Azure
+      bucket). One row per (deployment_sfid, reporting_month).
     config:
       materialized: table
+    columns:
+      - name: reporting_month
+        description: First day of the reporting month (month grain).
+      - name: account_id
+        description: Salesforce ID of the customer account.
+      - name: account_name
+        description: Salesforce account name for the customer.
+      - name: region
+        description: Sales region from the contract.
+      - name: contract_id
+        description: Salesforce ID of the contract.
+      - name: contract_start_date
+        description: Start date of the active contract.
+      - name: contract_end_date
+        description: End date of the active contract.
+      - name: hydrolix_product
+        description: Product line on the contract.
+      - name: commit_type
+        description: Unit of commit_amount (e.g., 'TB per Month', 'Billion records per month').
+      - name: commit_amount
+        description: Contracted commitment quantity for the commit_type unit.
+      - name: deployment_sfid
+        description: Salesforce ID of the deployment.
+      - name: deployment_ulid
+        description: ULID identifier of the deployment.
+      - name: ending_mrr_gross
+        description: End-of-month gross monthly recurring revenue for the contract.
+      - name: total_linode_cost
+        description: Sum of invoiced Linode costs allocated to this deployment for the month (post pro-ration for shared clusters).
+      - name: premium_discount_linode_cost
+        description: Sum of premium-discount-priced Linode costs for the deployment-month.
+      - name: hdx_linode_cost
+        description: HDX-priced Linode cost component for the deployment-month.
+      - name: azure_bucket_cost
+        description: Allocated Azure bucket storage cost for the deployment-month.
+      - name: total_bytes
+        description: Total ingested bytes used in MRR computation (monthly grain).
+      - name: total_rows
+        description: Total ingested rows used in MRR computation (monthly grain).
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - deployment_sfid
             - reporting_month
           where: "reporting_month is not null"
+  - name: dim_cluster_to_deployment
+    columns:
+      - name: cluster_to_deployment_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - allocation_month
+            - cluster_hostname
+            - cluster_project_name
+            - deployment_sfid
+  - name: mart_cogs__daily_contract_margin
+    description: >
+      Daily margin model at (contract_id, deployment_sfid, reporting_date) grain.
+      The (contract, month) grain is driven by the UNION of (1) every (contract, month)
+      in mart_mrr_contracts — guaranteeing 0% MRR variance vs that source — and
+      (2) every (contract, month) where fct_crm__contract_deployment_history says
+      the contract is active — ensuring cost-eligible months still appear even when
+      no MRR has landed yet. Contract/deployment/account attributes are looked up
+      from fct_crm__contract LEFT JOINed to CDH; contracts without a deployment in
+      CDH have deployment_sfid = NULL and NULL cost columns. Pairs daily Linode cost
+      estimates (from stg_linode_instance_billing_daily, allocated via
+      dim_cluster_to_deployment) with pro-rated monthly invoiced Linode cost, Azure
+      bucket cost, and MRR. Estimated and invoiced Linode columns sit side-by-side
+      to enable variance analysis. Built incrementally on a current+previous-month
+      window.
+    columns:
+      - name: margin_daily_id
+        description: >
+          Surrogate hash of (contract_id, deployment_sfid, reporting_date).
+          Stable across ETL reloads.
+        tests:
+          - unique
+          - not_null
+      - name: reporting_date
+        description: The calendar day this row represents.
+      - name: reporting_month
+        description: First day of the month containing reporting_date. Convenience column for monthly rollups.
+      - name: days_in_month
+        description: Total number of days in reporting_month. Divisor for all `_prorated` columns.
+      - name: account_id
+        description: Salesforce ID of the customer account.
+      - name: account_name
+        description: Salesforce account name for the customer.
+      - name: region
+        description: Sales region from the contract.
+      - name: hydrolix_product
+        description: Product line on the contract.
+      - name: commit_type
+        description: Unit of commit_amount.
+      - name: commit_amount
+        description: Contracted commitment quantity for the commit_type unit.
+      - name: contract_id
+        description: Salesforce ID of the contract.
+      - name: contract_start_date
+        description: Start date of the active contract.
+      - name: contract_end_date
+        description: End date of the active contract.
+      - name: contract_status
+        description: Status of the contract on fct_crm__contract (e.g., 'Activated', 'Draft', 'Expired'). Exposed as a column so consumers can filter explicitly rather than relying on upstream model filters.
+      - name: deployment_sfid
+        description: >
+          Salesforce ID of the deployment. NULL when the contract has no row in
+          fct_crm__contract_deployment_history (e.g., revenue-only contracts or
+          non-activated contracts).
+      - name: deployment_ulid
+        description: ULID identifier of the deployment. NULL when deployment_sfid is NULL.
+      - name: estimated_daily_linode_cost
+        description: >
+          Estimated daily Linode infrastructure cost derived from
+          stg_linode_instance_billing_daily and allocated to this deployment
+          via dim_cluster_to_deployment, then divided evenly across the
+          contracts that share the deployment for the month so naive rollups
+          aren't double-counted. Forward-looking estimate, not invoiced.
+      - name: estimated_daily_linode_hdx_cost
+        description: HDX-priced equivalent of estimated_daily_linode_cost; same contract-share allocation applied.
+      - name: monthly_invoiced_linode_cost
+        description: >
+          Sum of invoiced Linode cost for this (deployment, month). Same value
+          repeated across every day AND every contract sharing the deployment —
+          use max() per (deployment_sfid, reporting_month) before summing for
+          deployment-level monthly rollups.
+      - name: monthly_invoiced_linode_hdx_cost
+        description: HDX-priced equivalent of monthly_invoiced_linode_cost. Same repetition rule applies.
+      - name: monthly_invoiced_premium_discount_linode_cost
+        description: Premium-discount-priced equivalent of monthly_invoiced_linode_cost. Same repetition rule applies.
+      - name: invoiced_daily_linode_cost_prorated
+        description: >
+          monthly_invoiced_linode_cost / days_in_month / contracts_sharing_the_deployment_in_month.
+          Summing this across all (contract, deployment, day) rows reproduces the
+          upstream monthly total without double-counting deployments that span
+          multiple contracts.
+      - name: invoiced_daily_linode_hdx_cost_prorated
+        description: HDX-priced equivalent of invoiced_daily_linode_cost_prorated.
+      - name: invoiced_daily_premium_discount_linode_cost_prorated
+        description: Premium-discount equivalent of invoiced_daily_linode_cost_prorated.
+      - name: monthly_azure_bucket_cost
+        description: >
+          Sum of invoiced Azure bucket cost for this (deployment, month). Same
+          value repeated across every day AND every contract sharing the
+          deployment — use max() per (deployment_sfid, reporting_month) before
+          summing for deployment-level monthly rollups.
+      - name: daily_azure_bucket_cost_prorated
+        description: >
+          monthly_azure_bucket_cost / days_in_month / contracts_sharing_the_deployment_in_month.
+          Sums correctly across the entire mart to upstream Azure totals.
+      - name: ending_mrr_gross
+        description: End-of-month gross MRR for the contract. Same value repeated across every day in the month.
+      - name: daily_mrr_prorated
+        description: ending_mrr_gross / days_in_month.
+      - name: total_bytes
+        description: Total ingested bytes used in MRR computation (monthly grain, repeated per day).
+      - name: total_rows
+        description: Total ingested rows used in MRR computation (monthly grain, repeated per day).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - contract_id
+            - deployment_sfid
+            - reporting_date
+          where: "reporting_date is not null and deployment_sfid != 'UNALLOCATED'"

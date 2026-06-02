@@ -2,6 +2,7 @@
 
 | Model | Type | Description |
 |---|---|---|
+| [dim_cluster_to_deployment](dim_cluster_to_deployment.md) | table |  |
 | [fct_akm__invoice_item](fct_akm__invoice_item.md) | table |  |
 | [fct_aws__invoice_item](fct_aws__invoice_item.md) | view |  |
 | [fct_azr__invoice_item](fct_azr__invoice_item.md) | view |  |
@@ -11,15 +12,15 @@
 | [fct_cogs__cloud_infrastructure_summary](fct_cogs__cloud_infrastructure_summary.md) | view |  |
 | [fct_gcp__invoice_item](fct_gcp__invoice_item.md) | view |  |
 | [int_cogs__ie_bucket_with_contract](int_cogs__ie_bucket_with_contract.md) | table |  |
-| [mart_cogs__monthly_contract_margin](mart_cogs__monthly_contract_margin.md) | table |  |
+| [mart_cogs__daily_contract_margin](mart_cogs__daily_contract_margin.md) | incremental | Daily margin model at (contract_id, deployment_sfid, reporting_date) grain. The (contract, month) grain is driven by the UNION of (1) every (contract, month) in mart_mrr_contracts — guaranteeing 0% MRR variance vs that source — and (2) every (contract, month) where fct_crm__contract_deployment_history says the contract is active — ensuring cost-eligible months still appear even when no MRR has landed yet. Contract/deployment/account attributes are looked up from fct_crm__contract LEFT JOINed to CDH; contracts without a deployment in CDH have deployment_sfid = NULL and NULL cost columns. Pairs daily Linode cost estimates (from stg_linode_instance_billing_daily, allocated via dim_cluster_to_deployment) with pro-rated monthly invoiced Linode cost, Azure bucket cost, and MRR. Estimated and invoiced Linode columns sit side-by-side to enable variance analysis. Built incrementally on a current+previous-month window. |
+| [mart_cogs__monthly_contract_margin](mart_cogs__monthly_contract_margin.md) | table | Monthly margin model joining contract/deployment dimensions with MRR revenue and invoiced cloud infrastructure costs (Linode/Akamai + Azure bucket). One row per (deployment_sfid, reporting_month). |
 | [rpt_daily_linode_dev_costs](rpt_daily_linode_dev_costs.md) | table |  |
 | [stg_contract_azure_usage](stg_contract_azure_usage.md) | view |  |
 | [stg_contract_linode_usage](stg_contract_linode_usage.md) | view |  |
-| [stg_daily_contract_linode_usage](stg_daily_contract_linode_usage.md) | view |  |
-| [stg_daily_linode_resource_billing](stg_daily_linode_resource_billing.md) | table |  |
 | [stg_daily_shared_cluster_project_usage_estimate_pct](stg_daily_shared_cluster_project_usage_estimate_pct.md) | view |  |
 | [stg_linode__daily_shared_cluster_allocation](stg_linode__daily_shared_cluster_allocation.md) | view |  |
 | [stg_linode__monthly_shared_cluster_allocation](stg_linode__monthly_shared_cluster_allocation.md) | view |  |
 | [stg_linode_instance_billing](stg_linode_instance_billing.md) | table |  |
+| [stg_linode_instance_billing_daily](stg_linode_instance_billing_daily.md) | incremental |  |
 | [stg_linode_instance_with_shutdown](stg_linode_instance_with_shutdown.md) | table |  |
 | [temp_cogs__cost_report](temp_cogs__cost_report.md) | table |  |

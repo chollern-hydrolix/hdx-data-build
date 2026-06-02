@@ -1,4 +1,16 @@
-{{config(materialized="table")}}
+{{
+    config(
+        materialized='incremental',
+        unique_key='cost_report_id',
+        incremental_strategy='delete+insert',
+        indexes=[
+            {'columns': ['invoice_month']},
+            {'columns': ['deployment_sfid']},
+            {'columns': ['contract_id']},
+            {'columns': ['cost_type']}
+        ]
+    )
+}}
 
 with akm_invoice as (
     select
@@ -155,6 +167,7 @@ with akm_invoice as (
         azure_cost,
         cost_type,
         cluster_hostname,
+        null::text as bucket_name,
         deployment_ulid,
         deployment_sfid,
         account_name,
@@ -182,6 +195,7 @@ with akm_invoice as (
         r.azure_cost,
         alc.cost_type as cost_type,
         r.cluster_hostname,
+        null::text as bucket_name,
         deployment_ulid,
         deployment_sfid,
         account_name,
@@ -209,7 +223,9 @@ with akm_invoice as (
             when label ilike '%premium%standard%' then 'PREMIUM'
             when label ilike '%discount%' or label ilike '%premium%discount%' then 'ENTERPRISE'
             else 'N/A'
-        end as discount_type
+        end as discount_type,
+        substring(label from '(January|February|March|April|May|June|July|August|September|October|November|December)') as parsed_month_name,
+        substring(label from '(\d{4})') as parsed_year
     from akm_invoice
     where not is_positive
 ), stg_akamai_discount as (
@@ -217,40 +233,13 @@ with akm_invoice as (
         invoice_name,
         case
             when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
-            when discount_type = 'POC' then to_date(replace(replace(replace(label, ' ', ''), 'POCCredits', ''), 'POCCredit', ''), 'MonthYYYY')::date
-            when discount_type = 'PREMIUM' then
+            when discount_type in ('POC', 'PREMIUM', 'ENTERPRISE') and parsed_month_name is not null then
                 to_date(
-                    case
-                        when regexp_like(
-                            replace(replace(replace(label, ' ', ''), 'PremiumvsStandardCredit-', ''), 'PremiumVersusStandardCredit-', ''),
-                            '[0-9]{4}'
-                        )
-                        then replace(
-                                replace(
-                                    replace(label, ' ', ''),
-                                    'PremiumvsStandardCredit-',
-                                    ''
-                                ),
-                                'PremiumVersusStandardCredit-',
-                                ''
-                             )
-                        else replace(
-                                replace(
-                                    replace(label, ' ', ''),
-                                    'PremiumvsStandardCredit-',
-                                    ''
-                                ),
-                                'PremiumVersusStandardCredit-',
-                                ''
-                             ) || extract(year from invoice_publish_month)
-                    end,
+                    parsed_month_name || coalesce(parsed_year, extract(year from invoice_publish_month)::text),
                     'MonthYYYY'
                 )::date
-            when discount_type = 'ENTERPRISE' then to_date(replace(replace(replace(label, ' ', ''), 'Premium', ''), 'Discount-', ''), 'MonthYYYY')::date
-            -- when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
-            -- when discount_type = 'POC' then to_date(replace(replace(label, ' POC Credits', ''), ' POC Credit', ''), 'Month YYYY')::date
-            -- when discount_type = 'PREMIUM' then to_date(replace(replace(label, 'Premium vs Standard Credit - ', ''), 'Premium Versus Standard Credit - ', ''), 'Month YYYY')::date
-            -- when discount_type = 'ENTERPRISE' then to_date(replace(replace(label, 'Premium ', ''), 'Discount - ', ''), 'Month YYYY')::date
+            -- Fallback for discount labels with no parseable month: attribute to invoice_publish_month - 1 month
+            else date_trunc('month', invoice_publish_month - interval '1 month')::date
         end as invoice_month,
         'Linode' as cloud_provider,
         cloud_account,
@@ -264,6 +253,7 @@ with akm_invoice as (
         0 as azure_cost,
         'AKAMAI INVOICE' as cost_type,
         'N/A' as cluster_hostname,
+        null::text as bucket_name,
         'N/A' as deployment_ulid,
         'N/A' as deployment_sfid,
         'N/A' as account_name,
@@ -291,6 +281,7 @@ with akm_invoice as (
         a.azure_cost,
         a.cost_type,
         a.cluster_hostname,
+        a.bucket_name,
         a.deployment_ulid,
         a.deployment_sfid,
         a.account_name,
@@ -309,4 +300,20 @@ with akm_invoice as (
         union all
     select * from azure_data_invoice_staged
 )
-select * from invoice_data
+select
+    {{ dbt_utils.generate_surrogate_key([
+        'invoice_name',
+        'invoice_month',
+        'cloud_provider',
+        'cloud_account',
+        'cluster_hostname',
+        'coalesce(bucket_name, \'\')',
+        'cost_type',
+        'deployment_sfid',
+        'contract_id'
+    ]) }} as cost_report_id,
+    *
+from invoice_data
+{% if is_incremental() %}
+where invoice_month >= (select date_trunc('month', max(invoice_month))::date - interval '1 month' from {{ this }})
+{% endif %}

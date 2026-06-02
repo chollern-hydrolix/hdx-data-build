@@ -14,6 +14,7 @@ with linodes as (
         linode_type_list_price,
         linode_type_hdx_price,
         linode_type_monthly_list_price,
+        cloud_account,
         -- Use next month if linode_shutdown_date is null
         coalesce(
             linode_shutdown_date,

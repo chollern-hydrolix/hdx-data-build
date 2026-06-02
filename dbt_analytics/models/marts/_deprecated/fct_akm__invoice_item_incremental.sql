@@ -1,7 +1,8 @@
 {{
     config(
-        materialized='table',
+        materialized='incremental',
         unique_key='invoice_item_id',
+        incremental_strategy='delete+insert',
         indexes=[
             {'columns': ['cloud_account']},
             {'columns': ['invoice_publish_month']}
@@ -32,6 +33,10 @@ with invoice_items as (
         item.total
     from {{source('linode', 'invoice_item')}} item
     left join {{source('linode', 'invoice')}} i on item.invoice_id = i.id
+    {% if is_incremental() %}
+    where date_trunc('month', i.date)::date >=
+          (select date_trunc('month', max(invoice_publish_month))::date - interval '1 month' from {{ this }})
+    {% endif %}
 ), distinct_volume_attachments as (
     select distinct on (e.entity_id)
         e.entity_id as linode_volume_id,

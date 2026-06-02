@@ -28,6 +28,7 @@
 | `linode_type_list_price` | float |  |
 | `linode_type_hdx_price` | float |  |
 | `linode_type_monthly_list_price` | float |  |
+| `cloud_account` | varchar |  |
 | `linode_shutdown_date` | timestamp |  |
 | `linode_created_month` | date |  |
 | `linode_shutdown_month` | date |  |

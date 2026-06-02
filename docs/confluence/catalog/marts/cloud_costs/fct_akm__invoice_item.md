@@ -11,6 +11,7 @@
 
 | Column | Type | Description |
 |---|---|---|
+| `invoice_item_id` | text |  |
 | `invoice_name` | varchar |  |
 | `invoice_publish_date` | date |  |
 | `invoice_publish_month` | date |  |

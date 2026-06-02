@@ -9,8 +9,10 @@
 
 ## Depends On
 
+- `fct_akm__invoice_item`
 - `fct_cogs__azure_bucket_cost`
 - `fct_crm__contract`
+- `stg_linode__monthly_shared_cluster_allocation`
 
 ## Columns
 
