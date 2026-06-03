@@ -43,8 +43,7 @@
 | `akamai_contract_id` | text |  |
 | `akamai_account_id` | text |  |
 | `contract_overrun` | boolean |  |
-| `primary_industry` | text |  |
-| `primary_sub_industry` | text |  |
+| `industry` | text |  |
 | `sub_industry` | text |  |
 | `country` | text |  |
 | `local_currency` | text |  |
@@ -55,6 +54,8 @@
 | `avg_daily_max_qpm` | numeric |  |
 | `total_tib` | float |  |
 | `total_tb` | float |  |
+| `total_gib` | float |  |
+| `total_gb` | float |  |
 | `total_billion_rows` | numeric |  |
 | `pct_of_commit` | float |  |
 | `pct_of_commit_pro_rated` | float |  |

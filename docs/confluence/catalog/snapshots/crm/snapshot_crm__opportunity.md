@@ -64,3 +64,4 @@
 | `stage_duration_in_days` | integer |  |
 | `last_stage_change_date` | timestamp |  |
 | `grafana_seats` | numeric |  |
+| `poc_status` | text |  |

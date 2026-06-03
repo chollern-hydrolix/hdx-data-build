@@ -14,7 +14,6 @@
 - `fct_crm__replacement_contract`
 - `stg_crm__mrr_contract`
 - `stg_crm__mrr_contract`
-- `stg_monthly_contract_usage`
 - `stg_usage__contract_monthly`
 
 ## Columns

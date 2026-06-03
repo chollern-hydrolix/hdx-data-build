@@ -60,11 +60,11 @@ WITH months AS (
         next_opp.close_date as next_opp_close_date,
         next_opp.probability as next_opp_probability,
         next_opp.type_reporting as next_opp_type_reporting
-    from {{ ref('stg_mrr_contracts') }} as c
-    left join {{ ref('fct_replacement_contract') }} repl_c on c.contract_id = repl_c.contract_id
-    left join {{ ref('stg_mrr_contracts') }} repl_detail on repl_c.replacement_contract_id = repl_detail.contract_id
-    left join {{ ref('stg_next_opportunity_by_account') }} next_opp on c.account_id = next_opp.account_id
-    left join {{ ref('dim_account') }} a on c.account_id = a.account_id
+    from {{ ref('stg_crm__mrr_contract') }} as c
+    left join {{ ref('fct_crm__replacement_contract') }} repl_c on c.contract_id = repl_c.contract_id
+    left join {{ ref('stg_crm__mrr_contract') }} repl_detail on repl_c.replacement_contract_id = repl_detail.contract_id
+    left join {{ ref('stg_crm__next_opportunity_by_account') }} next_opp on c.account_id = next_opp.account_id
+    left join {{ ref('dim_crm__account') }} a on c.account_id = a.account_id
     where c.status = 'Activated'
     -- Filter out contracts replaced mid-term
     -- and not (

@@ -53,3 +53,7 @@
 | `dbt_updated_at` | timestamp |  |
 | `dbt_valid_from` | timestamp |  |
 | `dbt_valid_to` | timestamp |  |
+| `entered_initial_engagement` | timestamp |  |
+| `entered_qualifying` | timestamp |  |
+| `entered_alignment_to_business` | timestamp |  |
+| `entered_validation_with_customer` | timestamp |  |

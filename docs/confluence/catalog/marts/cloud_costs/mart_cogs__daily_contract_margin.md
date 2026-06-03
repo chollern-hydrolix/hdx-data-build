@@ -38,16 +38,18 @@ Daily margin model at (contract_id, deployment_sfid, reporting_date) grain. The 
 | `reporting_date` | date | The calendar day this row represents. |
 | `reporting_month` | date | First day of the month containing reporting_date. Convenience column for monthly rollups. |
 | `days_in_month` | integer | Total number of days in reporting_month. Divisor for all `_prorated` columns. |
-| `account_id` | character varying(18) | Salesforce ID of the customer account. |
+| `account_id` | varchar | Salesforce ID of the customer account. |
 | `account_name` | text | Salesforce account name for the customer. |
 | `region` | text | Sales region from the contract. |
 | `hydrolix_product` | text | Product line on the contract. |
 | `commit_type` | text | Unit of commit_amount. |
 | `commit_amount` | numeric | Contracted commitment quantity for the commit_type unit. |
-| `contract_id` | character varying(18) | Salesforce ID of the contract. |
+| `contract_id` | varchar | Salesforce ID of the contract. |
+| `contract_number` | text |  |
 | `contract_start_date` | date | Start date of the active contract. |
 | `contract_end_date` | date | End date of the active contract. |
-| `deployment_sfid` | character varying(18) | Salesforce ID of the deployment. NULL when the contract has no row in fct_crm__contract_deployment_history (e.g., revenue-only contracts or non-activated contracts). |
+| `contract_status` | text | Status of the contract on fct_crm__contract (e.g., 'Activated', 'Draft', 'Expired'). Exposed as a column so consumers can filter explicitly rather than relying on upstream model filters. |
+| `deployment_sfid` | varchar | Salesforce ID of the deployment. NULL when the contract has no row in fct_crm__contract_deployment_history (e.g., revenue-only contracts or non-activated contracts). |
 | `deployment_ulid` | text | ULID identifier of the deployment. NULL when deployment_sfid is NULL. |
 | `estimated_daily_linode_cost` | float | Estimated daily Linode infrastructure cost derived from stg_linode_instance_billing_daily and allocated to this deployment via dim_cluster_to_deployment, then divided evenly across the contracts that share the deployment for the month so naive rollups aren't double-counted. Forward-looking estimate, not invoiced. |
 | `estimated_daily_linode_hdx_cost` | float | HDX-priced equivalent of estimated_daily_linode_cost; same contract-share allocation applied. |
@@ -59,7 +61,14 @@ Daily margin model at (contract_id, deployment_sfid, reporting_date) grain. The 
 | `invoiced_daily_premium_discount_linode_cost_prorated` | numeric | Premium-discount equivalent of invoiced_daily_linode_cost_prorated. |
 | `monthly_azure_bucket_cost` | float | Sum of invoiced Azure bucket cost for this (deployment, month). Same value repeated across every day AND every contract sharing the deployment — use max() per (deployment_sfid, reporting_month) before summing for deployment-level monthly rollups. |
 | `daily_azure_bucket_cost_prorated` | numeric | monthly_azure_bucket_cost / days_in_month / contracts_sharing_the_deployment_in_month. Sums correctly across the entire mart to upstream Azure totals. |
-| `ending_mrr_gross` | float | End-of-month gross MRR for the contract. Same value repeated across every day in the month. |
+| `monthly_ending_mrr` | float |  |
 | `daily_mrr_prorated` | numeric | ending_mrr_gross / days_in_month. |
 | `total_bytes` | float | Total ingested bytes used in MRR computation (monthly grain, repeated per day). |
+| `total_gb` | float |  |
+| `total_gib` | float |  |
+| `total_tb` | float |  |
+| `total_tib` | float |  |
 | `total_rows` | float | Total ingested rows used in MRR computation (monthly grain, repeated per day). |
+| `max_qpm` | float |  |
+| `cluster_hostnames` | text |  |
+| `estimated_daily_margin` | float |  |

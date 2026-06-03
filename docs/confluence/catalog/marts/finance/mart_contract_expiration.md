@@ -9,70 +9,70 @@
 
 ## Depends On
 
-- `dim_account`
+- `dim_crm__account`
 - `dim_month`
-- `fct_replacement_contract`
-- `stg_mrr_contracts`
-- `stg_mrr_contracts`
-- `stg_next_opportunity_by_account`
+- `fct_crm__replacement_contract`
+- `stg_crm__mrr_contract`
+- `stg_crm__mrr_contract`
+- `stg_crm__next_opportunity_by_account`
 - `stg_usage__contract_monthly`
 
 ## Columns
 
 | Column | Type | Description |
 |---|---|---|
-| `account_name` | varchar |  |
+| `account_name` | text |  |
 | `activated_effective_month` | date |  |
 | `start_month` | date |  |
 | `end_month` | date |  |
 | `reporting_effective_month` | date |  |
 | `reporting_end_month` | date |  |
-| `mrr_gross` | float |  |
-| `contract_id` | varchar |  |
-| `contract_number` | varchar |  |
+| `mrr_gross` | numeric |  |
+| `contract_id` | character varying(18) |  |
+| `contract_number` | text |  |
 | `replaced_by_new_contract` | boolean |  |
 | `is_bridge_renewal` | boolean |  |
 | `type_calculated` | text |  |
-| `type` | varchar |  |
-| `channel` | varchar |  |
-| `region` | varchar |  |
-| `country` | varchar |  |
-| `hydrolix_product` | varchar |  |
-| `type_reporting` | varchar |  |
-| `account_id` | varchar |  |
+| `type` | text |  |
+| `channel` | text |  |
+| `region` | text |  |
+| `country` | text |  |
+| `hydrolix_product` | text |  |
+| `type_reporting` | text |  |
+| `account_id` | character varying(18) |  |
 | `renewal_contract_id` | varchar |  |
-| `renewal_contract_number` | varchar |  |
-| `renewal_mrr_gross` | float |  |
-| `renewal_type` | varchar |  |
+| `renewal_contract_number` | text |  |
+| `renewal_mrr_gross` | numeric |  |
+| `renewal_type` | text |  |
 | `is_event` | boolean |  |
 | `replaced_by_draft_contract` | boolean |  |
 | `churn_date_reporting_month` | date |  |
 | `churn_confirmed` | boolean |  |
 | `churn_confirmed_date` | date |  |
-| `account_owner` | varchar |  |
-| `sold_by` | varchar |  |
-| `primary_industry` | varchar |  |
-| `primary_sub_industry` | varchar |  |
-| `commit_amount` | float |  |
-| `commit_type` | varchar |  |
+| `account_owner` | text |  |
+| `sold_by` | text |  |
+| `primary_industry` | text |  |
+| `primary_sub_industry` | text |  |
+| `commit_amount` | numeric |  |
+| `commit_type` | text |  |
 | `has_next_opportunity` | boolean |  |
-| `next_opp_owner_name` | varchar |  |
-| `next_opp_stage_name` | varchar |  |
-| `next_opp_mrr_gross` | float |  |
+| `next_opp_owner_name` | text |  |
+| `next_opp_stage_name` | text |  |
+| `next_opp_mrr_gross` | numeric |  |
 | `next_opp_close_date` | date |  |
-| `next_opp_probability` | float |  |
-| `next_opp_type_reporting` | varchar |  |
+| `next_opp_probability` | numeric |  |
+| `next_opp_type_reporting` | text |  |
 | `reporting_month` | date |  |
 | `is_up_for_renewal` | boolean |  |
 | `is_renewed` | boolean |  |
 | `renewal_category` | text |  |
-| `total_mrr_expiring` | float |  |
-| `flat_renewal_mrr` | float |  |
-| `bridge_renewal_mrr` | float |  |
-| `downgrade_renewal_mrr` | float |  |
-| `upgrade_renewal_mrr` | float |  |
-| `churn_mrr` | float |  |
-| `total_mrr_outstanding` | float |  |
+| `total_mrr_expiring` | numeric |  |
+| `flat_renewal_mrr` | numeric |  |
+| `bridge_renewal_mrr` | numeric |  |
+| `downgrade_renewal_mrr` | numeric |  |
+| `upgrade_renewal_mrr` | numeric |  |
+| `churn_mrr` | numeric |  |
+| `total_mrr_outstanding` | numeric |  |
 | `downgraded_mrr` | numeric |  |
 | `upgraded_mrr` | numeric |  |
 | `total_contracts_expiring` | integer |  |

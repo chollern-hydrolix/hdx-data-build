@@ -25,6 +25,8 @@
 | `akamai_account_id` | text |  |
 | `record_type_name` | text |  |
 | `account_owner` | text |  |
+| `parent_account_id` | text |  |
+| `parent_account_name` | text |  |
 | `created_date` | timestamp |  |
 | `last_modified_date` | timestamp |  |
 | `customer_date` | date |  |

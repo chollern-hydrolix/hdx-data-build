@@ -13,6 +13,7 @@
 | [fct_crm__lead](fct_crm__lead.md) | table |  |
 | [fct_crm__note](fct_crm__note.md) | table |  |
 | [fct_crm__opportunity](fct_crm__opportunity.md) | table |  |
+| [fct_crm__replacement_contract](fct_crm__replacement_contract.md) | table |  |
 | [fct_crm__top_level_infrastructure_element](fct_crm__top_level_infrastructure_element.md) | table |  |
 | [fct_ie_deployment](fct_ie_deployment.md) | table |  |
 | [mart_crm__deployment](mart_crm__deployment.md) | table |  |

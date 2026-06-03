@@ -6,3 +6,11 @@
 |---|---|
 | **Schema** | `dbt_chollern` |
 | **Materialization** | table |
+
+## Columns
+
+| Column | Type | Description |
+|---|---|---|
+| `resource_group` | varchar |  |
+| `resource_name` | varchar |  |
+| `cost_ratio` | float |  |

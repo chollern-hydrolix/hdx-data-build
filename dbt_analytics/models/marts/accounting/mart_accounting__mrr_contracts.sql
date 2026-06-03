@@ -317,25 +317,22 @@ WITH months AS (
         case
             when c.commit_type in ('GB per day', 'GB per month', 'TB per month') then
                 case
-                    when u.total_bytes is null then 'N/A'
-                    when u.total_bytes > 570431864 then 'XL'
-                    when u.total_bytes between 151694534 and 570431864 then 'Large'
-                    when u.total_bytes between 24624909 and 151694534 then 'Medium'
+                    when c.total_bytes is null then 'N/A'
+                    when c.total_bytes > 570431864 then 'XL'
+                    when c.total_bytes between 151694534 and 570431864 then 'Large'
+                    when c.total_bytes between 24624909 and 151694534 then 'Medium'
                     else 'Small'
                 end
             else
                 case
-                    when u.total_rows is null then 'N/A'
-                    when u.total_rows > 607657130242 then 'XL'
-                    when u.total_rows between 141014472467 and 607657130242 then 'Large'
-                    when u.total_rows between 22621059000 and 141014472467 then 'Medium'
+                    when c.total_rows is null then 'N/A'
+                    when c.total_rows > 607657130242 then 'XL'
+                    when c.total_rows between 141014472467 and 607657130242 then 'Large'
+                    when c.total_rows between 22621059000 and 141014472467 then 'Medium'
                     else 'Small'
                 end
         end as usage_band
     from contracts_with_usage c
-    left join {{ref('stg_monthly_contract_usage')}} u
-        on c.contract_id = u.contract_id
-        and c.reporting_month = u.reporting_month
 )
 
 select * from contracts_with_grouping_bands

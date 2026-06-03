@@ -54,3 +54,7 @@
 | `dbt_valid_from` | timestamp |  |
 | `dbt_valid_to` | timestamp |  |
 | `system_modstamp` | timestamp |  |
+| `description` | text |  |
+| `support_level` | text |  |
+| `contact_mobile` | text |  |
+| `case_short_id` | text |  |

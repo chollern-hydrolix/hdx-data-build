@@ -65,8 +65,8 @@
 | `sold_by` | text |  |
 | `contract_active` | boolean |  |
 | `akamai_sales_rep` | text |  |
-| `industry` | text |  |
-| `sub_industry` | text |  |
+| `primary_industry` | text |  |
+| `primary_sub_industry` | text |  |
 | `opportunity_id` | character varying(18) |  |
 | `reporting_month` | date |  |
 | `reporting_quarter` | date |  |
