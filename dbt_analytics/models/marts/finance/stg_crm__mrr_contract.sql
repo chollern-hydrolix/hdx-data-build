@@ -56,7 +56,9 @@ with contracts as (
         a.sub_industry__c as sub_industry,
         a.primary_industry__c as primary_industry,
         a.primary_sub_industry__c as primary_sub_industry,
-        c.akamai_sales_rep__c as akamai_sales_rep
+        c.akamai_sales_rep__c as akamai_sales_rep,
+        c.standard_overages__c as standard_overages,
+        c.premium_overages__c as premium_overages
     from {{source('raw_salesforce', 'contract')}} c
     left join {{source('raw_salesforce', 'account')}} a on c.account_id = a.id
     left join {{source('raw_salesforce', 'user')}} u1 on c.sold_by__c = u1.id

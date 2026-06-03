@@ -66,3 +66,5 @@
 | `primary_industry` | text |  |
 | `primary_sub_industry` | text |  |
 | `akamai_sales_rep` | text |  |
+| `standard_overages` | numeric |  |
+| `premium_overages` | numeric |  |

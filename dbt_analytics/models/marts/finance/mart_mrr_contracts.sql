@@ -56,6 +56,8 @@ WITH months AS (
         c.status,
         c.commit_amount,
         coalesce(c.commit_type, 'N/A') as commit_type,
+        c.standard_overages,
+        c.premium_overages,
         c.fx_rate,
         c.fx_impact_mrr,
         c.customer_count_impact,

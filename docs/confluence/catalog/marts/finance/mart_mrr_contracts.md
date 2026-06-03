@@ -53,6 +53,8 @@
 | `status` | text |  |
 | `commit_amount` | numeric |  |
 | `commit_type` | text |  |
+| `standard_overages` | numeric |  |
+| `premium_overages` | numeric |  |
 | `fx_rate` | numeric |  |
 | `fx_impact_mrr` | numeric |  |
 | `customer_count_impact` | numeric |  |

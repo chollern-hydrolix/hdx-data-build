@@ -2,6 +2,7 @@
 
 | Model | Type | Description |
 |---|---|---|
+| [fct_usage__contract_billing_daily](fct_usage__contract_billing_daily.md) | incremental |  |
 | [fct_usage__contract_daily](fct_usage__contract_daily.md) | incremental |  |
 | [fct_usage__deployment_daily](fct_usage__deployment_daily.md) | table |  |
 | [fct_usage__project_daily](fct_usage__project_daily.md) | table |  |
