@@ -38,4 +38,5 @@
 | `months_hours` | numeric |  |
 | `billable_hours` | numeric |  |
 | `total_amount` | float |  |
+| `premium_discount_amount` | float |  |
 | `hdx_amount` | float |  |

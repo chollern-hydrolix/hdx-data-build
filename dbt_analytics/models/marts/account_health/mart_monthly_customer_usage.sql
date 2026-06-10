@@ -302,20 +302,22 @@ with ie_tables as (
     select
         d.*,
         case
-            when commit_type = 'Billion records per month' then total_billion_rows / nullif(commit_amount, 0)
-            when commit_type = 'TB per Month' then total_tb / nullif(commit_amount, 0)
-            when commit_type = 'TiB per Month' then total_tib / nullif(commit_amount, 0)
-            when commit_type = 'GB per Month' then total_gb / nullif(commit_amount, 0)
-            when commit_type = 'GiB per Month' then total_gib / nullif(commit_amount, 0)
-            else total_tb / nullif(commit_amount, 0)
+            when commit_type = 'Billion records per month' then coalesce(total_billion_rows / nullif(commit_amount, 0), 0)
+            when commit_type = 'TB per Month' then coalesce(total_tb / nullif(commit_amount, 0), 0)
+            when commit_type = 'TiB per Month' then coalesce(total_tib / nullif(commit_amount, 0), 0)
+            when commit_type = 'GB per Month' then coalesce(total_gb / nullif(commit_amount, 0), 0)
+            when commit_type = 'GiB per Month' then coalesce(total_gib / nullif(commit_amount, 0), 0)
+            when commit_type = 'Premium GB per Month' then coalesce(total_gb / nullif(commit_amount, 0), 0)
+            else coalesce(total_tb / nullif(commit_amount, 0), 0)
         end as pct_of_commit,
         case
-            when commit_type = 'Billion records per month' then total_billion_rows / nullif(commit_amount, 0)
-            when commit_type = 'TB per Month' then total_tb / nullif(commit_amount, 0)
-            when commit_type = 'TiB per Month' then total_tib / nullif(commit_amount, 0)
-            when commit_type = 'GB per Month' then total_gb / nullif(commit_amount, 0)
-            when commit_type = 'GiB per Month' then total_gib / nullif(commit_amount, 0)
-            else total_tb / nullif(commit_amount, 0)
+            when commit_type = 'Billion records per month' then coalesce(total_billion_rows / nullif(commit_amount, 0), 0)
+            when commit_type = 'TB per Month' then coalesce(total_tb / nullif(commit_amount, 0), 0)
+            when commit_type = 'TiB per Month' then coalesce(total_tib / nullif(commit_amount, 0), 0)
+            when commit_type = 'GB per Month' then coalesce(total_gb / nullif(commit_amount, 0), 0)
+            when commit_type = 'GiB per Month' then coalesce(total_gib / nullif(commit_amount, 0), 0)
+            when commit_type = 'Premium GB per Month' then coalesce(total_gb / nullif(commit_amount, 0), 0)
+            else coalesce(total_tb / nullif(commit_amount, 0), 0)
         end as pct_of_commit_pro_rated
     from deals_with_usage d
 ), deals_with_flags as (

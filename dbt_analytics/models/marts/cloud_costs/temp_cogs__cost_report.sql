@@ -209,7 +209,9 @@ with akm_invoice as (
             when label ilike '%premium%standard%' then 'PREMIUM'
             when label ilike '%discount%' or label ilike '%premium%discount%' then 'ENTERPRISE'
             else 'N/A'
-        end as discount_type
+        end as discount_type,
+        substring(label from '(January|February|March|April|May|June|July|August|September|October|November|December)') as parsed_month_name,
+        substring(label from '(\d{4})') as parsed_year
     from akm_invoice
     where not is_positive
 ), stg_akamai_discount as (
@@ -217,40 +219,13 @@ with akm_invoice as (
         invoice_name,
         case
             when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
-            when discount_type = 'POC' then to_date(replace(replace(replace(label, ' ', ''), 'POCCredits', ''), 'POCCredit', ''), 'MonthYYYY')::date
-            when discount_type = 'PREMIUM' then
+            when discount_type in ('POC', 'PREMIUM', 'ENTERPRISE') and parsed_month_name is not null then
                 to_date(
-                    case
-                        when regexp_like(
-                            replace(replace(replace(label, ' ', ''), 'PremiumvsStandardCredit-', ''), 'PremiumVersusStandardCredit-', ''),
-                            '[0-9]{4}'
-                        )
-                        then replace(
-                                replace(
-                                    replace(label, ' ', ''),
-                                    'PremiumvsStandardCredit-',
-                                    ''
-                                ),
-                                'PremiumVersusStandardCredit-',
-                                ''
-                             )
-                        else replace(
-                                replace(
-                                    replace(label, ' ', ''),
-                                    'PremiumvsStandardCredit-',
-                                    ''
-                                ),
-                                'PremiumVersusStandardCredit-',
-                                ''
-                             ) || extract(year from invoice_publish_month)
-                    end,
+                    parsed_month_name || coalesce(parsed_year, extract(year from invoice_publish_month)::text),
                     'MonthYYYY'
                 )::date
-            when discount_type = 'ENTERPRISE' then to_date(replace(replace(replace(label, ' ', ''), 'Premium', ''), 'Discount-', ''), 'MonthYYYY')::date
-            -- when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
-            -- when discount_type = 'POC' then to_date(replace(replace(label, ' POC Credits', ''), ' POC Credit', ''), 'Month YYYY')::date
-            -- when discount_type = 'PREMIUM' then to_date(replace(replace(label, 'Premium vs Standard Credit - ', ''), 'Premium Versus Standard Credit - ', ''), 'Month YYYY')::date
-            -- when discount_type = 'ENTERPRISE' then to_date(replace(replace(label, 'Premium ', ''), 'Discount - ', ''), 'Month YYYY')::date
+            -- Fallback for discount labels with no parseable month
+            else date_trunc('month', invoice_publish_month - interval '1 month')::date
         end as invoice_month,
         'Linode' as cloud_provider,
         cloud_account,

@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: azure
+    schema: azure
+    tables:
+      - name: monthly_cost_fact
+      - name: daily_usage_fact

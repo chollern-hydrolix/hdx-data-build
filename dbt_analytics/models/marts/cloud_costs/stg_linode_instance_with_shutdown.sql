@@ -32,7 +32,7 @@ WITH
       li.status AS linode_final_status,
       lt.label AS linode_type_label,
       lt.list_price AS linode_type_list_price,
-      lt.hdx_price AS linode_type_hdx_price,
+      coalesce(lt.hdx_price, lt.list_price) AS linode_type_hdx_price,
       lt.monthly_list_price AS linode_type_monthly_list_price,
       ls.created AS linode_shutdown_date,
       li.cloud_account

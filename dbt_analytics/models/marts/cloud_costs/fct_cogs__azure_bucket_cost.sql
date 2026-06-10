@@ -1,8 +1,4 @@
-{{
-    config(
-        materialized="table"
-    )
-}}
+{{ config(materialized="table") }}
 
 /*
 
@@ -39,61 +35,64 @@ with invoiced_months as (
     select billing_month, bucket_name, pre_tax_cost
     from current_month_estimate
     where billing_month not in (select billing_month from invoiced_months)
-), ie_bucket_raw as (
+), ie_bucket as (
     select
         id as ie_bucket_id,
         storage_name__c as sf_storage_name,
-        bucket_name__c as sf_bucket_name,
-        row_number() over (
-            partition by bucket_uuid__c
-            order by system_modstamp desc, id desc
-        ) as rn
+        bucket_name__c as sf_bucket_name
     from raw_salesforce.ie_bucket__c
     where is_deleted is False
     and bucket_cloud__c ilike '%azure%'
-), ie_bucket as (
-    select
-        ie_bucket_id,
-        sf_storage_name,
-        sf_bucket_name
-    from ie_bucket_raw
-    where rn = 1
 
--- Unpivot storage_name and bucket_name into a single lookup key,
--- then deduplicate so no bucket name string appears more than once.
--- This prevents fan-out when joining to Azure costs.
+-- Unpivot storage_name and bucket_name into a single lookup key.
+-- DISTINCT on (lookup_key, ie_bucket_id) handles the case where the same bucket
+-- matches via both fields without double-counting it.
 ), ie_bucket_unpivoted as (
-    select sf_storage_name as lookup_key, ie_bucket_id, 1 as priority
+    select sf_storage_name as lookup_key, ie_bucket_id
     from ie_bucket
     where sf_storage_name is not null
 
     union all
 
-    select sf_bucket_name as lookup_key, ie_bucket_id, 2 as priority
+    select sf_bucket_name as lookup_key, ie_bucket_id
     from ie_bucket
     where sf_bucket_name is not null
-), ie_bucket_ranked as (
-    select
-        lookup_key,
-        ie_bucket_id,
-        row_number() over (partition by lookup_key order by priority, ie_bucket_id) as rn
-    from ie_bucket_unpivoted
-), ie_bucket_deduped as (
-    select
+), ie_bucket_all_matches as (
+    select distinct
         lookup_key,
         ie_bucket_id
-    from ie_bucket_ranked
-    where rn = 1
-), azure_joined as (
-    -- Aggregate by (billing_month, ie_bucket_id) so multiple resource_names in
-    -- monthly_cost_fact that resolve to the same Salesforce bucket don't fan out.
+    from ie_bucket_unpivoted
+-- Only allocate cost to IE Buckets that have a linked deployment.
+-- Orphaned IE Buckets (no deployment in SF) are excluded from the split.
+), ie_bucket_linked as (
+    select m.lookup_key, m.ie_bucket_id
+    from ie_bucket_all_matches m
+    inner join {{ ref('int_cogs__ie_bucket_with_contract') }} c on m.ie_bucket_id = c.ie_bucket_id
+    where c.deployment_sfid is not null
+), ie_bucket_match_counts as (
+    select
+        lookup_key,
+        count(*) as match_count
+    from ie_bucket_linked
+    group by lookup_key
+-- Divide each Azure bucket's cost evenly across deployment-linked IE Buckets.
+-- coalesce(match_count, 1) preserves the full cost for buckets with no linked deployment.
+), azure_allocated as (
     select
         ac.billing_month,
-        bd.ie_bucket_id,
-        max(ac.bucket_name) as bucket_name,  -- fallback when ie_b has no SF match
-        sum(ac.pre_tax_cost) as pre_tax_cost
+        ac.bucket_name,
+        bm.ie_bucket_id,
+        ac.pre_tax_cost / coalesce(mc.match_count, 1) as allocated_cost
     from azure_costs ac
-    left join ie_bucket_deduped bd on ac.bucket_name = bd.lookup_key
+    left join ie_bucket_linked bm on ac.bucket_name = bm.lookup_key
+    left join ie_bucket_match_counts mc on ac.bucket_name = mc.lookup_key
+), azure_joined as (
+    select
+        billing_month,
+        ie_bucket_id,
+        max(bucket_name) as bucket_name,
+        sum(allocated_cost) as pre_tax_cost
+    from azure_allocated
     group by 1, 2
 ), azure_data_invoice_staged as (
     select
@@ -116,7 +115,10 @@ with invoiced_months as (
         coalesce(ie_b.deployment_ulid, 'N/A') as deployment_ulid,
         coalesce(ie_b.deployment_sfid, 'N/A') as deployment_sfid,
         coalesce(ie_b.opportunity_id, 'N/A') as opportunity_id,
-        coalesce(ie_b.contract_id, 'N/A') as contract_id
+        coalesce(ie_b.contract_id, 'N/A') as contract_id,
+        ie_b.storage_name as ie_bucket_storage_name,
+        ie_b.bucket_name as ie_bucket_bucket_name,
+        a.bucket_name as azure_resource_name
     from azure_joined a
     left join {{ ref('int_cogs__ie_bucket_with_contract') }} ie_b on a.ie_bucket_id = ie_b.ie_bucket_id
 )

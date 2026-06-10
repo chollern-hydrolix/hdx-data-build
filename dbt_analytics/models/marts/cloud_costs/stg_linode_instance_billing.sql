@@ -67,9 +67,16 @@ with linodes as (
         case
             when months_hours = billable_hours then linode_type_monthly_list_price
             else linode_type_list_price * billable_hours
-        end as total_amount,
-        -- (linode_type_list_price * billable_hours) as total_amount,
-        (linode_type_hdx_price * billable_hours) as hdx_amount
+        end as total_amount
     from linodes_with_billable_hours l
+), linodes_with_premium_cost as (
+    select
+        l.*,
+        case
+            when linode_label ilike '%premium%' then total_amount * 0.8324
+            else total_amount
+        end as premium_discount_amount,
+        (linode_type_hdx_price * billable_hours) as hdx_amount
+    from linodes_with_estimated_costs l
 )
-select * from linodes_with_estimated_costs
+select * from linodes_with_premium_cost
