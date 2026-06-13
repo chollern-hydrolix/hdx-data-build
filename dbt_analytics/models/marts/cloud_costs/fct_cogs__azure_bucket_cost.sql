@@ -62,20 +62,24 @@ with invoiced_months as (
         lookup_key,
         ie_bucket_id
     from ie_bucket_unpivoted
--- Only allocate cost to IE Buckets that have a linked deployment.
--- Orphaned IE Buckets (no deployment in SF) are excluded from the split.
+-- One row per (lookup_key, deployment_sfid): cost is split by distinct deployments,
+-- not raw IE Bucket record count. DISTINCT ON picks a representative ie_bucket_id
+-- per deployment so the downstream join to int_cogs__ie_bucket_with_contract still works.
 ), ie_bucket_linked as (
-    select m.lookup_key, m.ie_bucket_id
+    select distinct on (m.lookup_key, c.deployment_sfid)
+        m.lookup_key,
+        c.ie_bucket_id
     from ie_bucket_all_matches m
     inner join {{ ref('int_cogs__ie_bucket_with_contract') }} c on m.ie_bucket_id = c.ie_bucket_id
     where c.deployment_sfid is not null
+    order by m.lookup_key, c.deployment_sfid, c.ie_bucket_id
 ), ie_bucket_match_counts as (
     select
         lookup_key,
         count(*) as match_count
     from ie_bucket_linked
     group by lookup_key
--- Divide each Azure bucket's cost evenly across deployment-linked IE Buckets.
+-- Divide each Azure bucket's cost evenly across distinct deployments.
 -- coalesce(match_count, 1) preserves the full cost for buckets with no linked deployment.
 ), azure_allocated as (
     select

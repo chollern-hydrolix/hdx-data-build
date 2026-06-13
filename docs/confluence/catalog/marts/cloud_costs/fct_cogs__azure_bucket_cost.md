@@ -10,6 +10,7 @@
 ## Depends On
 
 - `int_cogs__ie_bucket_with_contract`
+- `int_cogs__ie_bucket_with_contract`
 - `stg_azure__resource_group_name_map`
 
 ## Columns
@@ -31,3 +32,6 @@
 | `deployment_sfid` | varchar |  |
 | `opportunity_id` | text |  |
 | `contract_id` | text |  |
+| `ie_bucket_storage_name` | text |  |
+| `ie_bucket_bucket_name` | text |  |
+| `azure_resource_name` | text |  |

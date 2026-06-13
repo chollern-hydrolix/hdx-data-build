@@ -17,6 +17,16 @@ with akm_invoice as (
         *,
         total >= 0 as is_positive
     from {{ ref('fct_akm__invoice_item') }}
+-- Maps each Linode cluster_label to its SF cluster hostname where the names differ.
+-- Filters out trivial rows (where the SF hostname would just be label + '.trafficpeak.live')
+-- and picks the most recent entry per label to prevent fan-out.
+), linode_sf_hostname_map as (
+    select distinct on (pod_namespace)
+        pod_namespace,
+        cluster_hostname as sf_cluster_hostname
+    from argus.cluster_hostname_label_mapping
+    where cluster_hostname != pod_namespace || '.trafficpeak.live'
+    order by pod_namespace, most_recent_log desc nulls last
 ), sf_cluster_context as (
     select distinct on (ie_c.name)
         ie_c.name as cluster_hostname,
@@ -51,16 +61,16 @@ with akm_invoice as (
         date_trunc('month', invoice_publish_month - interval '1 month')::date as invoice_month,
         'Linode' as cloud_provider,
         cloud_account,
-        case
-            when cluster_label is not null then concat(cluster_label, '.trafficpeak.live')
-            else 'N/A'
-        end as cluster_hostname,
+        cluster_label,
+        coalesce(m.sf_cluster_hostname, concat(cluster_label, '.trafficpeak.live')) as cluster_hostname,
+        m.sf_cluster_hostname as mapped_sf_hostname,
         sum(total) as total,
         sum(premium_discount_total) as premium_discount_total,
         sum(hdx_total) as hdx_total
     from akm_invoice
+    left join linode_sf_hostname_map m on cluster_label = m.pod_namespace
     where is_positive
-    group by 1, 2, 3, 4, 5
+    group by 1, 2, 3, 4, 5, 6, 7
 ), raw_akamai_invoice_with_salesforce_data as (
     select
         r.*,
@@ -141,6 +151,9 @@ with akm_invoice as (
             else 'INTERNAL'
         end as cost_type,
         r.cluster_hostname,
+        r.cluster_label,
+        r.mapped_sf_hostname,
+        cwm.ie_cluster_name as sf_cluster_hostname,
         cwm.deployment_ulid,
         cwm.deployment_sfid,
         cwm.account_name,
@@ -168,6 +181,9 @@ with akm_invoice as (
         azure_cost,
         cost_type,
         cluster_hostname,
+        cluster_label,
+        mapped_sf_hostname,
+        sf_cluster_hostname,
         null::text as bucket_name,
         deployment_ulid,
         deployment_sfid,
@@ -196,6 +212,9 @@ with akm_invoice as (
         r.azure_cost,
         alc.cost_type as cost_type,
         r.cluster_hostname,
+        r.cluster_label,
+        r.mapped_sf_hostname,
+        r.sf_cluster_hostname,
         null::text as bucket_name,
         deployment_ulid,
         deployment_sfid,
@@ -248,6 +267,9 @@ with akm_invoice as (
         0 as azure_cost,
         'AKAMAI INVOICE' as cost_type,
         'N/A' as cluster_hostname,
+        null::text as cluster_label,
+        null::text as mapped_sf_hostname,
+        null::text as sf_cluster_hostname,
         null::text as bucket_name,
         'N/A' as deployment_ulid,
         'N/A' as deployment_sfid,
@@ -293,6 +315,9 @@ with akm_invoice as (
         a.azure_cost,
         a.cost_type,
         a.cluster_hostname,
+        null::text as cluster_label,
+        null::text as mapped_sf_hostname,
+        null::text as sf_cluster_hostname,
         a.bucket_name,
         a.deployment_ulid,
         a.deployment_sfid,
