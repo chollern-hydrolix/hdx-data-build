@@ -31,7 +31,10 @@
 | `invoice_promotion_credit_total` | float |  |
 | `azure_cost` | float |  |
 | `cost_type` | text |  |
-| `cluster_hostname` | text |  |
+| `cluster_hostname` | varchar |  |
+| `cluster_label` | varchar |  |
+| `mapped_sf_hostname` | varchar |  |
+| `sf_cluster_hostname` | text |  |
 | `deployment_ulid` | text |  |
 | `deployment_sfid` | varchar |  |
 | `account_name` | text |  |

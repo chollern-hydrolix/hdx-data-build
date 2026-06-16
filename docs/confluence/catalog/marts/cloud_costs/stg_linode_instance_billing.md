@@ -40,3 +40,5 @@
 | `total_amount` | float |  |
 | `premium_discount_amount` | float |  |
 | `hdx_amount` | float |  |
+| `sf_cluster_hostname` | varchar |  |
+| `cluster_hostname` | varchar |  |

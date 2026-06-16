@@ -27,3 +27,5 @@
 | `total` | float |  |
 | `premium_discount_total` | float |  |
 | `hdx_total` | float |  |
+| `sf_cluster_hostname` | varchar |  |
+| `cluster_hostname` | varchar |  |

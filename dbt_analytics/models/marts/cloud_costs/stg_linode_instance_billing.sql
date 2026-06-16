@@ -1,6 +1,13 @@
 {{ config(materialized="table") }}
 
-with linodes as (
+with linode_sf_hostname_map as (
+    select distinct on (pod_namespace)
+        pod_namespace,
+        cluster_hostname as sf_cluster_hostname
+    from argus.cluster_hostname_label_mapping
+    where cluster_hostname != pod_namespace || '.trafficpeak.live'
+    order by pod_namespace, most_recent_log desc nulls last
+), linodes as (
     select
         cluster_id,
         cluster_created_date,
@@ -79,4 +86,9 @@ with linodes as (
         (linode_type_hdx_price * billable_hours) as hdx_amount
     from linodes_with_estimated_costs l
 )
-select * from linodes_with_premium_cost
+select
+    l.*,
+    m.sf_cluster_hostname,
+    coalesce(m.sf_cluster_hostname, l.cluster_label || '.trafficpeak.live') as cluster_hostname
+from linodes_with_premium_cost l
+left join linode_sf_hostname_map m on l.cluster_label = m.pod_namespace

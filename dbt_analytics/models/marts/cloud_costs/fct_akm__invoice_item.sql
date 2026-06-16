@@ -9,7 +9,14 @@
     )
 }}
 
-with invoice_items as (
+with linode_sf_hostname_map as (
+    select distinct on (pod_namespace)
+        pod_namespace,
+        cluster_hostname as sf_cluster_hostname
+    from argus.cluster_hostname_label_mapping
+    where cluster_hostname != pod_namespace || '.trafficpeak.live'
+    order by pod_namespace, most_recent_log desc nulls last
+), invoice_items as (
     select
         {{ dbt_utils.generate_surrogate_key([
             'i.id',
@@ -85,4 +92,9 @@ with invoice_items as (
         items.premium_discount_total * 0.7 as hdx_total
     from invoice_items_with_discount items
 )
-select * from invoice_items_with_hdx_cost
+select
+    items.*,
+    m.sf_cluster_hostname,
+    coalesce(m.sf_cluster_hostname, items.cluster_label || '.trafficpeak.live') as cluster_hostname
+from invoice_items_with_hdx_cost items
+left join linode_sf_hostname_map m on items.cluster_label = m.pod_namespace

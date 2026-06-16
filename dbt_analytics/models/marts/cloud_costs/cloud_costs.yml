@@ -7,6 +7,20 @@ models:
         tests:
           - unique
           - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - invoice_id
+            - label
+            - from_dt
+            - to_dt
+            - total
+  - name: stg_linode_instance_billing
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - linode_id
+            - invoice_month
   - name: stg_linode_instance_billing_daily
     columns:
       - name: daily_billing_id
