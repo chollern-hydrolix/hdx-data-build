@@ -40,6 +40,22 @@ with salesforce_contracts as (
             -- Otherwise, use end_month
             else c.end_date::date
         end as reporting_end_date,
+        -- Billing Start Date: Used to ensure there are not overlapping contracts
+        case
+            -- If this contract replaced another mid-contract period
+            when c.previous_contract_end_date__c > c.start_date then c.start_date::date
+            -- Otherwise, use activated_effective_month
+            else c.start_date::date
+        end as billing_start_date,
+        -- If this contract was replaced by another mid-contract period: use the day prior to the replacement contract activated effective date to end this contract
+        case
+            -- If replacement contract exists: run this contract through the day preceding the replacement contract activated effective date
+            when repl_c.replacement_start_date is not null then greatest((repl_c.replacement_start_date - interval '1 day'), c.start_date)::date
+            -- If type is Cancellation or Expiration: make sure billing_end_date is on or after recognition_date__c
+            when c.type_calculated__c in ('Cancellation', 'Expiration') and c.recognition_date__c > c.end_date then c.recognition_date__c::date
+            -- Otherwise, use end_date
+            else c.end_date::date
+        end as billing_end_date,
         coalesce(c.churn_confirmed_date__c, DATE '2099-12-31')::date as churn_confirmed_date,
         coalesce(c.churn_confirmed_date_month__c, DATE '2099-12-31')::date as churn_confirmed_month,
         c.mrr__c as mrr_gross,

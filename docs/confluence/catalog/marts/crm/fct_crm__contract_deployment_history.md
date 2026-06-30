@@ -27,5 +27,7 @@
 | `contract_end_date` | date |  |
 | `reporting_start_date` | date |  |
 | `reporting_end_date` | date |  |
+| `billing_start_date` | date |  |
+| `billing_end_date` | date |  |
 | `reporting_start_month` | date |  |
 | `reporting_end_month` | date |  |

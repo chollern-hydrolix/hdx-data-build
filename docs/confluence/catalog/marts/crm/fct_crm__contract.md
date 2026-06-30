@@ -35,6 +35,8 @@
 | `activated_effective_month` | date |  |
 | `reporting_start_date` | date |  |
 | `reporting_end_date` | date |  |
+| `billing_start_date` | date |  |
+| `billing_end_date` | date |  |
 | `churn_confirmed_date` | date |  |
 | `churn_confirmed_month` | date |  |
 | `mrr_gross` | numeric |  |
@@ -83,3 +85,4 @@
 | `last_modified_date` | timestamp |  |
 | `contract_short_id` | text |  |
 | `system_modstamp` | timestamp |  |
+| `_should_flag` | boolean |  |

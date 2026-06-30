@@ -33,6 +33,7 @@
 | `cost_type` | text |  |
 | `cluster_hostname` | varchar |  |
 | `cluster_label` | varchar |  |
+| `resource_type` | text |  |
 | `mapped_sf_hostname` | varchar |  |
 | `sf_cluster_hostname` | text |  |
 | `deployment_ulid` | text |  |

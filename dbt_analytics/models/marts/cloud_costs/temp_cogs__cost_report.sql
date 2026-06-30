@@ -1,4 +1,14 @@
-{{config(materialized="table")}}
+{{
+    config(
+        materialized='table',
+        indexes=[
+            {'columns': ['invoice_month']},
+            {'columns': ['cost_type']},
+            {'columns': ['cloud_provider']},
+            {'columns': ['cloud_account']}
+        ]
+    )
+}}
 
 with akm_invoice as (
     select
@@ -50,6 +60,7 @@ with akm_invoice as (
         'Linode' as cloud_provider,
         cloud_account,
         cluster_label,
+        resource_type,
         coalesce(m.sf_cluster_hostname, concat(cluster_label, '.trafficpeak.live')) as cluster_hostname,
         m.sf_cluster_hostname as mapped_sf_hostname,
         total,
@@ -126,7 +137,15 @@ with akm_invoice as (
                             when r.is_shared_cluster then 'SHARED'
                             else
                                 case
-                                    when cwm.deployment_sfid is null then 'UNKNOWN'
+                                    when cwm.deployment_sfid is null then
+                                        case
+                                            when resource_type = 'NodeBalancer' then 'UNKNOWN : NodeBalancer'
+                                            when resource_type ilike '%GB%' then 'UNKNOWN : Linode Instance'
+                                            when resource_type ilike '%object%' then 'UNKNOWN : Object Storage'
+                                            when resource_type ilike '%object%' then 'UNKNOWN : Storage Volume'
+                                            when resource_type ilike '%lke%' then 'UNKNOWN : LKE'
+                                            else 'UNKNOWN : Other'
+                                        end
                                     when r.contract_id is null then 'POC'
                                     when r.original_contract_start_date > r.invoice_month then 'POC'
                                     when r.original_contract_start_date <= r.invoice_month then 'PAID'
@@ -139,6 +158,7 @@ with akm_invoice as (
         end as cost_type,
         r.cluster_hostname,
         r.cluster_label,
+        r.resource_type,
         r.mapped_sf_hostname,
         cwm.ie_cluster_name as sf_cluster_hostname,
         cwm.deployment_ulid,
@@ -169,6 +189,7 @@ with akm_invoice as (
         cost_type,
         cluster_hostname,
         cluster_label,
+        resource_type,
         mapped_sf_hostname,
         sf_cluster_hostname,
         deployment_ulid,
@@ -199,6 +220,7 @@ with akm_invoice as (
         alc.cost_type as cost_type,
         r.cluster_hostname,
         r.cluster_label,
+        r.resource_type,
         r.mapped_sf_hostname,
         r.sf_cluster_hostname,
         deployment_ulid,
@@ -259,6 +281,7 @@ with akm_invoice as (
         'AKAMAI INVOICE' as cost_type,
         'N/A' as cluster_hostname,
         null::text as cluster_label,
+        null::text as resource_type,
         null::text as mapped_sf_hostname,
         null::text as sf_cluster_hostname,
         'N/A' as deployment_ulid,
@@ -289,6 +312,7 @@ with akm_invoice as (
         a.cost_type,
         a.cluster_hostname,
         null::text as cluster_label,
+        null::text as resource_type,
         null::text as mapped_sf_hostname,
         null::text as sf_cluster_hostname,
         a.deployment_ulid,

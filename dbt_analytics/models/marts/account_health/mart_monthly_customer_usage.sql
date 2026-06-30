@@ -9,7 +9,8 @@ Used for TrafficPeak micro-site
 with ie_tables as (
     select
         id as ie_table_id,
-        ie_project__c as ie_project_id
+        ie_project__c as ie_project_id,
+        billing_group__c as billing_group
     from raw_salesforce.ie_table__c
     where is_deleted is False
 ), ie_projects as (
@@ -67,6 +68,7 @@ with ie_tables as (
     from ie_table_usage u
     left join ie_tables t on u.ie_table_id = t.ie_table_id
     left join ie_projects p on t.ie_project_id = p.ie_project_id
+    where t.billing_group != 'Omitted'
     group by 1, 2
 ), ie_table_usage_with_queries_by_project_by_month as (
     select

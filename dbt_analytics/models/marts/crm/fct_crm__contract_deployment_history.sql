@@ -36,7 +36,9 @@ with recursive deployment_with_latest_contract as (
         c.contract_start_date,
         c.contract_end_date,
         c.reporting_start_date,
-        c.reporting_end_date
+        c.reporting_end_date,
+        c.billing_start_date,
+        c.billing_end_date
     from contract_loop cl
     left join {{ref('fct_crm__contract')}} c on cl.contract_id = c.contract_id
     where cl.salesforce_deployment_id is not null
