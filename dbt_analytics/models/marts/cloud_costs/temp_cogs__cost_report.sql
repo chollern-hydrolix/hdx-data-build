@@ -132,20 +132,13 @@ with akm_invoice as (
             when cloud_account = 'prod' then
                 case
                     when r.cluster_hostname ilike '%test-%' or r.cluster_hostname ilike '%dev-%' then 'R&D'
+                    when r.cluster_hostname ilike '%partners-us%' then 'S&M'
                     when r.cluster_hostname != 'N/A' then
                         case
                             when r.is_shared_cluster then 'SHARED'
                             else
                                 case
-                                    when cwm.deployment_sfid is null then
-                                        case
-                                            when resource_type = 'NodeBalancer' then 'UNKNOWN : NodeBalancer'
-                                            when resource_type ilike '%GB%' then 'UNKNOWN : Linode Instance'
-                                            when resource_type ilike '%object%' then 'UNKNOWN : Object Storage'
-                                            when resource_type ilike '%object%' then 'UNKNOWN : Storage Volume'
-                                            when resource_type ilike '%lke%' then 'UNKNOWN : LKE'
-                                            else 'UNKNOWN : Other'
-                                        end
+                                    when cwm.deployment_sfid is null then 'UNKNOWN'
                                     when r.contract_id is null then 'POC'
                                     when r.original_contract_start_date > r.invoice_month then 'POC'
                                     when r.original_contract_start_date <= r.invoice_month then 'PAID'
@@ -156,6 +149,14 @@ with akm_invoice as (
                 end
             else 'INTERNAL'
         end as cost_type,
+        case
+            when resource_type = 'NodeBalancer' then 'NodeBalancer'
+            when resource_type ilike '%GB%' then 'Linode Instance'
+            when resource_type ilike '%object%' then 'Object Storage'
+            when resource_type ilike '%object%' then 'Storage Volume'
+            when resource_type ilike '%lke%' then 'LKE'
+            else 'Other'
+        end as cost_sub_type,
         r.cluster_hostname,
         r.cluster_label,
         r.resource_type,
@@ -187,6 +188,7 @@ with akm_invoice as (
         promotion_credit_total as invoice_promotion_credit_total,
         azure_cost,
         cost_type,
+        cost_sub_type,
         cluster_hostname,
         cluster_label,
         resource_type,
@@ -218,6 +220,7 @@ with akm_invoice as (
         r.promotion_credit_total * alc.pro_rated_pct as invoice_promotion_credit_total,
         r.azure_cost,
         alc.cost_type as cost_type,
+        cost_sub_type,
         r.cluster_hostname,
         r.cluster_label,
         r.resource_type,
@@ -257,28 +260,32 @@ with akm_invoice as (
     where not is_positive
 ), stg_akamai_discount as (
     select
-        invoice_name,
-        case
-            when discount_type = 'PROMOTION' then date_trunc('month', invoice_publish_month - interval '1 month')::date
-            when discount_type in ('POC', 'PREMIUM', 'ENTERPRISE') and parsed_month_name is not null then
-                to_date(
-                    parsed_month_name || coalesce(parsed_year, extract(year from invoice_publish_month)::text),
-                    'MonthYYYY'
-                )::date
-            -- Fallback for discount labels with no parseable month
-            else date_trunc('month', invoice_publish_month - interval '1 month')::date
-        end as invoice_month,
+        d.invoice_name,
+        coalesce(
+            ov.invoice_month,
+            case
+                when d.discount_type = 'PROMOTION' then date_trunc('month', d.invoice_publish_month - interval '1 month')::date
+                when d.discount_type in ('POC', 'PREMIUM', 'ENTERPRISE') and d.parsed_month_name is not null then
+                    to_date(
+                        d.parsed_month_name || coalesce(d.parsed_year, extract(year from d.invoice_publish_month)::text),
+                        'MonthYYYY'
+                    )::date
+                -- Fallback for discount labels with no parseable month
+                else date_trunc('month', d.invoice_publish_month - interval '1 month')::date
+            end
+        ) as invoice_month,
         'Linode' as cloud_provider,
-        cloud_account,
+        d.cloud_account,
         0 as total,
         0 as premium_discount_total,
         0 as hdx_total,
-        case when discount_type = 'ENTERPRISE' then total else 0 end as invoice_enterprise_discount_total,
-        case when discount_type = 'PREMIUM' then total else 0 end as invoice_premium_discount_total,
-        case when discount_type = 'POC' then total else 0 end as invoice_poc_credit_total,
-        case when discount_type = 'PROMOTION' then total else 0 end as invoice_promotion_credit_total,
+        case when coalesce(ov.discount_type, d.discount_type) = 'ENTERPRISE' then d.total else 0 end as invoice_enterprise_discount_total,
+        case when coalesce(ov.discount_type, d.discount_type) = 'PREMIUM' then d.total else 0 end as invoice_premium_discount_total,
+        case when coalesce(ov.discount_type, d.discount_type) = 'POC' then d.total else 0 end as invoice_poc_credit_total,
+        case when coalesce(ov.discount_type, d.discount_type) = 'PROMOTION' then d.total else 0 end as invoice_promotion_credit_total,
         0 as azure_cost,
         'AKAMAI INVOICE' as cost_type,
+        null::text as cost_sub_type,
         'N/A' as cluster_hostname,
         null::text as cluster_label,
         null::text as resource_type,
@@ -293,8 +300,9 @@ with akm_invoice as (
         null::date as opportunity_close_date,
         'N/A' as opportunity_id,
         'N/A' as contract_id
-    from raw_akamai_discount
-    where discount_type != 'N/A'
+    from raw_akamai_discount d
+    left join linode.invoice_override ov on d.invoice_id = ov.invoice_id
+    where d.discount_type != 'N/A'
 ), azure_data_invoice_staged as (
     select
         concat(to_char(a.invoice_month, 'Mon YYYY'), ' Azure Invoice') as invoice_name,
@@ -310,6 +318,7 @@ with akm_invoice as (
         0 as invoice_promotion_credit_total,
         a.azure_cost,
         a.cost_type,
+        'Azure' as cost_sub_type,
         a.cluster_hostname,
         null::text as cluster_label,
         null::text as resource_type,
