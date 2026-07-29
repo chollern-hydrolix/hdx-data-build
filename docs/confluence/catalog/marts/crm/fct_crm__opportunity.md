@@ -40,6 +40,7 @@
 | `poc_initiated` | boolean |  |
 | `is_poc` | boolean |  |
 | `poc_start_date` | date |  |
+| `poc_end_date` | date |  |
 | `poc_status` | text |  |
 | `loss_reason` | text |  |
 | `lead_source` | text |  |

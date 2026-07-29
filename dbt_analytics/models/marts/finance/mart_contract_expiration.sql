@@ -30,6 +30,7 @@ WITH months AS (
         c.contract_number,
         c.replaced_by_new_contract,
         c.is_bridge_renewal,
+        coalesce(repl_detail.is_bridge_renewal, False) as renewal_is_bridge,
         c.type_calculated,
         c.type,
         c.channel,
@@ -87,8 +88,8 @@ WITH months AS (
         case
             when c.renewal_type in ('Cancellation', 'Expiration') or c.churn_confirmed then 'churn'
             when c.renewal_type = 'None' then 'outstanding'
+            when c.renewal_is_bridge then 'bridge'
             when c.mrr_gross = c.renewal_mrr_gross then 'flat'
-            when c.is_bridge_renewal then 'bridge'
             when c.mrr_gross > c.renewal_mrr_gross then 'downgrade'
             when c.mrr_gross < c.renewal_mrr_gross then 'upgrade'
             else 'N/A'
